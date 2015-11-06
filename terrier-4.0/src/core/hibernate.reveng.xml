@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
+<hibernate-reverse-engineering>
+  <schema-selection match-catalog="demir_tc"/>
+  <table-filter match-name="collections"/>
+  <table-filter match-name="tt_docs"/>
+  <table-filter match-name="parent_collection"/>
+  <table-filter match-name="collection_labels"/>
+  <table-filter match-name="doc_tag_data"/>
+  <table-filter match-name="unclassified_files"/>
+  <table-filter match-name="test_prm"/>
+  <table-filter match-name="train_test_set"/>
+  <table-filter match-name="runs"/>
+  <table-filter match-name="train_prm"/>
+  <table-filter match-name="parent_col_docs"/>
+  <table-filter match-name="docs"/>
+  <table-filter match-name="doc_labels"/>
+  <table-filter match-name="run_res"/>
+</hibernate-reverse-engineering>

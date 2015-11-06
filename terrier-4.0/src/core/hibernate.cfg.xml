@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/demir_tc?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">root</property>
+    <property name="hibernate.connection.password">Meltem.48</property>
+    <mapping resource="demir/tc/irbased/hibernate/RunRes.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/Docs.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/Runs.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/TtDocs.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/TrainTestSet.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/TrainPrm.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/ParentColDocs.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/TestPrm.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/ParentCollection.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/DocTagData.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/CollectionLabels.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/UnclassifiedFiles.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/DocLabels.hbm.xml"/>
+    <mapping resource="demir/tc/irbased/hibernate/Collections.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>
