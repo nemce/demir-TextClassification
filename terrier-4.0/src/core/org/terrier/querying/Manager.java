@@ -912,6 +912,7 @@ public class Manager
 		Matching rtr = null;
 		Index _index = rq.getIndex();
 		String ModelName = rq.getMatchingModel();
+                logger.info("Model Name : " + ModelName);
 		//add the namespace if the modelname is not fully qualified
 		
 		final String ModelNames[] = ModelName.split("\\s*,\\s*");

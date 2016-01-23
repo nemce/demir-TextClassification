@@ -6,6 +6,7 @@ package demir.tc.classification;
 
 import demir.dbconnection.ImportToDB;
 import demir.terrier.querying.IRTCDocNoOutputFormat;
+import demir.terrier.querying.QueryProcessor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -349,13 +350,23 @@ public class TestClassificationByQuery {
             long startLoading = System.currentTimeMillis();
             double c = 1.0;
             Boolean isParameterValueSpecified = false;
-            org.terrier.applications.batchquerying.TRECQuerying querying
-                    = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index);
-            SearchRequest srq = querying.processOneQuery(c, isParameterValueSpecified);
-            demir.terrier.querying.IRTCDocNoOutputFormat irof = new IRTCDocNoOutputFormat(index);
-
-            irof.printResults(null, srq, sRes, sRes, ir.getClsPrm().getMaxRetDocSize());
-
+            String sResult = null;
+            
+            //21.12.2015 'te kapatıldı.
+            /*
+            demir.terrier.querying.QueryProcessor qp = new QueryProcessor(pQueryText, pQueryId, index);
+            SearchRequest srq = qp.processOneQuery(c, true);
+            */
+            
+            
+            // TODO MELTEM
+ /**/
+          org.terrier.applications.batchquerying.TRECQuerying querying
+                  = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index);
+          SearchRequest srq = querying.processOneQuery(c, isParameterValueSpecified);
+          demir.terrier.querying.IRTCDocNoOutputFormat irof = new IRTCDocNoOutputFormat(index);
+          irof.printResults(null, srq, sRes, sRes, ir.getClsPrm().getMaxRetDocSize());
+                       
             /// v3.5 içindi kapatıldı.
             //java.util.ArrayList<TRECQuerying.OneQueryOutputFormat> ls;
             //ls = TrecTerrier.RequestQueryReturnSearchResult(pQueryId, pQueryText, index);
@@ -375,12 +386,14 @@ public class TestClassificationByQuery {
             pFileId = pFileId.replace(".xml", "");
             pFileId = pFileId.replace(".txt", "");
 
-            String sResult = pFileId + " " + sRes + "\r\n";
+            sResult = pFileId + " " + sRes + "\r\n";
             if (ir.clsPrm.WriteClassificationRes.equals(ir.clsPrm.WRITE_CLASSIFICATION_RES_DB)) {
                 ImportToDB.ImportLine(session, ir.clsPrm.getRunId(), sResult);
             } else {
                 ResultFileWriter.print(sResult);
             }
+            /**/
+            // TODO MELTEM
             return sResult;
 
         } catch (Exception ex) {

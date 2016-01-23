@@ -28,14 +28,37 @@ public class TermInfo {
         this.TermId = TermId;
     }
 
+//    private void InitClasses() {
+//        Classes.put("acq", 0.0);
+//        Classes.put("corn", 0.0);
+//        Classes.put("crude", 0.0);
+//        Classes.put("earn", 0.0);
+//        Classes.put("interest", 0.0);
+//        Classes.put("ship", 0.0);
+//        Classes.put("trade", 0.0);
+//    }
+    
     private void InitClasses() {
-        Classes.put("acq", 0.0);
-        Classes.put("corn", 0.0);
-        Classes.put("crude", 0.0);
-        Classes.put("earn", 0.0);
-        Classes.put("interest", 0.0);
-        Classes.put("ship", 0.0);
-        Classes.put("trade", 0.0);
+        Classes.put("alt.atheism", 0.0);
+        Classes.put("comp.graphics", 0.0);
+        Classes.put("comp.os.ms-windows.", 0.0);
+        Classes.put("comp.sys.ibm.pc.har", 0.0);
+        Classes.put("comp.sys.mac.hardwa", 0.0);
+        Classes.put("comp.windows.x", 0.0);
+        Classes.put("misc.forsale", 0.0);
+        Classes.put("rec.autos", 0.0);
+        Classes.put("rec.motorcycles", 0.0);
+        Classes.put("rec.sport.baseball", 0.0);
+        Classes.put("rec.sport.hockey", 0.0);
+        Classes.put("sci.crypt", 0.0);
+        Classes.put("sci.electronics", 0.0);
+        Classes.put("sci.med", 0.0);
+        Classes.put("sci.space", 0.0);
+        Classes.put("soc.religion.christ", 0.0);
+        Classes.put("talk.politics.guns", 0.0);
+        Classes.put("talk.politics.midea", 0.0);
+        Classes.put("talk.politics.misc", 0.0);
+        Classes.put("talk.religion.misc", 0.0);
     }
 
     public void AddClass(String sClassLabel) {

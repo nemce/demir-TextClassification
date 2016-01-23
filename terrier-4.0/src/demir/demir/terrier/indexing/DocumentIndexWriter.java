@@ -75,7 +75,7 @@ public class DocumentIndexWriter {
         DirectIndex di = new DirectIndex((IndexOnDisk) index, "direct");
         Lexicon lx = index.getLexicon();
 
-        PrintWriter pwm = new PrintWriter("D:\\Datasets\\REUTERS\\reuters_cat7\\documentindex.txt");
+        PrintWriter pwm = new PrintWriter("D:\\Datasets\\20NEWSGROUP\\20news-18828\\documentindex.txt");
 
         while (iterator.hasNext()) {
             DocumentIndexEntry die = iterator.next();
@@ -132,7 +132,7 @@ public class DocumentIndexWriter {
                 int docid = it.getId();
                 IRMedicalQuery mq = new IRMedicalQuery();
                 String docno = metaIndex.getItem(metaIndexDocumentKey, docid);
-                mq.setCollectionId(14);
+                mq.setCollectionId(prm.getCollectionId());
                 mq.setsDocNo(docno);
                 mq.SelRecLabelbyDocId(prm, session);
                 //System.out.print(docno + ';');

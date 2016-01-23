@@ -36,16 +36,16 @@ package org.terrier.matching.models;
   */
 public class TF_IDF extends WeightingModel {
 	
-	private static final long serialVersionUID = 1L;
+	protected static final long serialVersionUID = 1L;
 
 	/** model name */
-	private static final String name = "TF_IDF";
+	protected static final String name = "TF_IDF";
 
 	/** The constant k_1.*/
-	private double k_1 = 1.2d;
+	protected double k_1 = 1.2d;
 	
 	/** The constant b.*/
-	private double b = 0.75d;
+	protected double b = 0.75d;
 
 	/** 
 	 * A default constructor to make this model.
@@ -76,7 +76,7 @@ public class TF_IDF extends WeightingModel {
 	 * @return the score assigned to a document with the given 
 	 *		 tf and docLength, and other preset parameters
 	 */
-	public final double score(double tf, double docLength) {
+	public double score(double tf, double docLength) {
 		double Robertson_tf = k_1*tf/(tf+k_1*(1-b+b*docLength/averageDocumentLength));
 		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
 		return keyFrequency * Robertson_tf * idf;

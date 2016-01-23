@@ -297,7 +297,7 @@ public class TRECQuerying {
          * Index fonksiyon çağırılmadan önce yüklenmelidir.
 	 */
         public TRECQuerying(String queryText, String queryId, Index i) {
-		this.setIndex(i);
+            if(i != null) this.setIndex(i);
 		this.createManager();
 		this.querySource = this.getQueryParser(queryText, queryId);
 		this.printer = getOutputFormat();

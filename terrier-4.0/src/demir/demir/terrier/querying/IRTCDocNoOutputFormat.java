@@ -70,7 +70,9 @@ public class IRTCDocNoOutputFormat implements OutputFormat {
 	}
 	
 	/** method which extracts the docnos for the prescribed resultset */
-	protected String[] obtainDocnos(final String metaIndexDocumentKey, final SearchRequest q, final ResultSet set) throws IOException
+	protected String[] obtainDocnos(final String metaIndexDocumentKey
+               , final SearchRequest q, final ResultSet set
+                        ) throws IOException
 	{
 		String[] docnos;
 		if (set.hasMetaItems(metaIndexDocumentKey)) {

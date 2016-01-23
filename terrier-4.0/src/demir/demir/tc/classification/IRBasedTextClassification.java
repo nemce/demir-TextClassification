@@ -41,7 +41,10 @@ public class IRBasedTextClassification {
             InitConnections();
             // TODO MELTEM 04 07 2015
             // ArrangePrmFromDB yapısını değiştir.
-            pclsPrm.ArrangePrmFromDB();
+            // TODO MELTEM 15 11 2015
+            // Sadece Reranking uygulanacağı durumda çalışmasını sağla
+            // 
+            //pclsPrm.ArrangePrmFromDB();
             // Sonuçların veri tabanına yazılması istenir ise 
             // Sistemde Run oluşturulur.
             if(clsPrm.WriteClassificationRes.equals("DB"))
