@@ -57,7 +57,7 @@ public class Full extends org.terrier.matching.daat.Full {
                 if (termWeightingModels.length == 0) {
                     logger.warn("No weighting models for term " + queryTerm + ", skipping scoring");
                     continue;
-                }
+                } 
                 /// Added By Meltem 27122015
                 FeaturedLexiconEntry tfle = new FeaturedLexiconEntry((BasicLexiconEntry) t);
                 if(MIValues.containsKey(queryTerm))
