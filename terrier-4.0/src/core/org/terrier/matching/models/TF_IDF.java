@@ -81,6 +81,23 @@ public class TF_IDF extends WeightingModel {
 		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
 		return keyFrequency * Robertson_tf * idf;
 	}
+        
+//        public double siiilllTFIDFscore(double tf, double docLength) {
+//		
+//                double K = tf + k_1 * ((1 - b) + b * docLength / averageDocumentLength) ;
+//                //double Robertson_tf = k_1*tf/(tf+k_1*((1-b)+b*docLength/averageDocumentLength));
+//                double Robertson_tf = k_1*tf/K;
+//		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
+//		return keyFrequency * Robertson_tf * idf;
+//	}
+//        
+//        public double siiilllBM25score(double tf, double docLength) {
+//	    double K = k_1 * ((1 - b) + b * docLength / averageDocumentLength) + tf;
+//	    return (tf * (k_3 + 1d) * keyFrequency / ((k_3 + keyFrequency) * K))
+//	            * WeightingModelLibrary.log((numberOfDocuments - documentFrequency + 0.5d) / (documentFrequency + 0.5d));
+//	}
+        
+        
 	/**
 	 * This method provides the contract for implementing weighting models.
 	 * 

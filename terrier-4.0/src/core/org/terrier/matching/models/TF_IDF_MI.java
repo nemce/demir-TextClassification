@@ -40,7 +40,9 @@ public class TF_IDF_MI  extends TF_IDF{
                 //return MI;
                 //return Math.sqrt(keyFrequency * Robertson_tf * idf) + Math.sqrt(MI * 1.618);
                 return (keyFrequency * Robertson_tf * idf) + Math.sqrt(MI);
-	}
+                //return Math.sqrt(keyFrequency * Robertson_tf * idf) + Math.sqrt(MI * 2.0);
+                //return (keyFrequency * Robertson_tf * idf) * MI;	
+}
         
         /**
 	 * prepare
