@@ -35,6 +35,8 @@ public class FeatureGenerator {
                 double N1N0 = TermFreq - N1N1;
                 double N0N1 = ((ClassInfo) hmClass.get(sClassLabel)).GetClassDocFrequency() - N1N1;
                 double MI = hmTerm.get(keyTerm).CalculateMI2(N1N1, N0N1, N1N0, ClassDocCnt, sClassLabel);
+                
+                //double MI3 = hmTerm.get(keyTerm).CalculateMI3(N1N1, N0N1, N1N0, ClassDocCnt, sClassLabel);
 //                 System.out.println(sClassLabel  + " " + MI
 //                         + " " + N1N1 + " " + N1N0 + " " + N0N1 + " " +  ClassDocCnt);
 //               
