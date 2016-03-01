@@ -95,6 +95,11 @@ public class CandidateResultSet implements ResultSet, Serializable
 			docids[i] 	   = cc.getDocId();
 			scores[i] 	   = cc.getScore();
 			occurrences[i] = cc.getOccurrence();
+//                        System.out.println(
+//                                cc.getDocId() + " " +
+//                                cc.getScore() + " " +
+//                                cc.getOccurrence()
+//                        );
 			i++;
 		}
 	}

@@ -170,7 +170,7 @@ public class Full extends org.terrier.matching.daat.Full {
 			postingHeap.enqueue((docid << 32) + i);
 		}
         boolean targetResultSetSizeReached = false;
-        Queue<FeaturedCandidateResult> candidateResultList = new PriorityQueue<FeaturedCandidateResult>();
+        Queue<CandidateResult> candidateResultList = new PriorityQueue<CandidateResult>();
         int currentDocId = selectMinimumDocId(postingHeap);
         IterablePosting currentPosting = null;
         double threshold = 0.0d;
@@ -178,7 +178,7 @@ public class Full extends org.terrier.matching.daat.Full {
         
         while (currentDocId != -1)  {
             // We create a new candidate for the doc id considered
-            System.out.println("Doc : " + currentDocId);
+            //System.out.println("Doc : " + currentDocId);
             FeaturedCandidateResult currentCandidate = makeCandidateResult(currentDocId, plm.size());
             
             int currentPostingListIndex = (int) (postingHeap.firstLong() & 0xFFFF);
@@ -188,17 +188,7 @@ public class Full extends org.terrier.matching.daat.Full {
             //scored++;
             do {
             	double d = assignScore2(currentPostingListIndex, currentCandidate);
-               // TODO MELTEM 
-               // burayı değiştir
-               // AssignScore FeaturedCandidateResultSet'e göre değiştir.
-               //        cc.updateScore(score);
-               //        cc.updateOccurrence((i < 16) ? (short)(1 << i) : 0);
-               
-//                System.out.println(currentPostingListIndex + "- " + 
-//                        currentCandidate.getDocId() +  "- " +  
-//                        currentCandidate.getScore() +  "- " + 
-//                        currentCandidate.getOccurrence());
-        
+                      
             	//assignScore(currentPostingListIndex, wm[currentPostingListIndex], currentCandidate, currentPosting);
             	long newDocid = currentPosting.next();
             	postingHeap.dequeueLong();
@@ -213,10 +203,12 @@ public class Full extends org.terrier.matching.daat.Full {
             } while (nextDocid == currentDocId);
             
             
-            
+            currentCandidate.CalculateScore3();
             if ((! targetResultSetSizeReached) || currentCandidate.getScore() > threshold) {
             	//System.err.println("New document " + currentCandidate.getDocId() + " with score " + currentCandidate.getScore() + " passes threshold of " + threshold);
-        		candidateResultList.add(currentCandidate);
+        		
+                        //System.out.println(currentCandidate.getDocId() + " " + currentCandidate.getScore());
+                        candidateResultList.add(currentCandidate);
         		if (RETRIEVED_SET_SIZE != 0 && candidateResultList.size() == RETRIEVED_SET_SIZE + 1)
         		{
         			targetResultSetSizeReached = true;
@@ -224,7 +216,8 @@ public class Full extends org.terrier.matching.daat.Full {
         			//System.err.println("Removing document with score " + candidateResultList.poll().getScore());
         		}
         		//System.err.println("Now have " + candidateResultList.size() + " retrieved docs");
-        		threshold = candidateResultList.peek().getScore();
+        		
+                        threshold = candidateResultList.peek().getScore();
         	}
             currentDocId = selectMinimumDocId(postingHeap);
         }
@@ -235,7 +228,7 @@ public class Full extends org.terrier.matching.daat.Full {
         // Fifth, we build the result set
          //TODO Meltem 14022016
         // FeaturedResultSet'e göre düzeltilecek.
-        // resultSet = makeResultSet(candidateResultList);
+         resultSet = makeResultSet(candidateResultList);
         
         numberOfRetrievedDocuments = resultSet.getScores().length;
         finalise(queryTerms);
@@ -255,12 +248,15 @@ public class Full extends org.terrier.matching.daat.Full {
     }
         
         
-        protected double assignScore2(final int i, CandidateResult cc) throws IOException
+        protected double assignScore2(final int i, FeaturedCandidateResult cc) throws IOException
     {
         double score = plm.score(i);
+        //System.out.println(i + " - " + cc.getDocId() + " - " + score);
+        double feature = (double)(((FeaturedLexiconEntry)plm.getStatistics(i)).GetMiValue());
+        cc.updateScore(i, score);
+        cc.updateFeature(i, feature);
+        cc.updateOccurrence(i, ((i < 16) ? (short)(1 << i) : 0));
         return score;
-//        cc.updateScore(score);
-//        cc.updateOccurrence((i < 16) ? (short)(1 << i) : 0);
     }
         
                 

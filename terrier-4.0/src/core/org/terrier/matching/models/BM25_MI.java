@@ -75,7 +75,8 @@ public class BM25_MI extends BM25 {
             double bm25 = (tf * (k_3 + 1d) * keyFrequency / ((k_3 + keyFrequency) * K))
 	            * WeightingModelLibrary.log((numberOfDocuments - documentFrequency + 0.5d) / (documentFrequency + 0.5d));
             //System.out.println(bm25);
-            bm25 = bm25 + Math.sqrt(MI);
+            //25.02.2016 kapattım
+            //bm25 = bm25 + Math.sqrt(MI);
             return bm25;
 	}
         

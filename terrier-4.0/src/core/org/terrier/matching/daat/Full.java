@@ -136,7 +136,9 @@ public class Full extends BaseMatching
             
             if ((! targetResultSetSizeReached) || currentCandidate.getScore() > threshold) {
             	//System.err.println("New document " + currentCandidate.getDocId() + " with score " + currentCandidate.getScore() + " passes threshold of " + threshold);
-        		candidateResultList.add(currentCandidate);
+        	
+                       	
+                candidateResultList.add(currentCandidate);
         		if (RETRIEVED_SET_SIZE != 0 && candidateResultList.size() == RETRIEVED_SET_SIZE + 1)
         		{
         			targetResultSetSizeReached = true;
@@ -145,6 +147,7 @@ public class Full extends BaseMatching
         		}
         		//System.err.println("Now have " + candidateResultList.size() + " retrieved docs");
         		threshold = candidateResultList.peek().getScore();
+                        
         	}
             currentDocId = selectMinimumDocId(postingHeap);
         }
@@ -175,7 +178,9 @@ public class Full extends BaseMatching
 	 */
 	protected void assignScore(final int i, CandidateResult cc) throws IOException
     {
-        cc.updateScore(plm.score(i));
+        double score = plm.score(i);
+        //System.out.println(i + " - " + cc.getDocId() + " - " + score);
+        cc.updateScore(score);
         cc.updateOccurrence((i < 16) ? (short)(1 << i) : 0);
     }
 	

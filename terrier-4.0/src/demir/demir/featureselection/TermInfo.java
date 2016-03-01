@@ -16,8 +16,10 @@ public class TermInfo {
 
     public static void main(String[] args) {
         TermInfo mi = new TermInfo(5);
-        mi.CalculateMI(49, 141, 27652, 774106, "AA");
-        mi.CalculateMI(0.0, 19.0, 369.0, 6010.0, "AA");
+        
+        //mi.CalculateMI(49, 141, 27652, 774106, "AA");
+        //mi.CalculateMI(0.0, 19.0, 369.0, 6010.0, "AA");
+        mi.CalculateChiSquare(49, 141, 27652, 801948, "AA");
     }
 
     int TermId;
@@ -29,6 +31,7 @@ public class TermInfo {
 
     public TermInfo(int TermId) {
         this.Classes = new HashMap<>();
+        this.ClassOccurence = new HashMap<>();
         InitClasses();
         this.MI = new HashMap<>();
         this.TermId = TermId;
@@ -49,9 +52,18 @@ public class TermInfo {
     public HashMap GetClasses() {
         return Classes;
     }
+    
+    public HashMap GetClassOccurences() {
+        return ClassOccurence;
+    }
 
     public HashMap GetMI() {
         return MI;
+    }
+    
+    public void putMI(String classLabel, double val)
+    {
+        MI.put(classLabel, val);
     }
 
     private void InitClassesDummy1() {
@@ -150,6 +162,7 @@ public class TermInfo {
         return TermOccurence;
     }
 
+
     public double CalculateMI(double N11, double N01, double N10, double N00, String Classlabel) {
         if (N11 == 0) {
             return 0;
@@ -175,7 +188,7 @@ public class TermInfo {
                 + (N10 / Total * TwoBaseLog(Total * N10 / ((N10 + N11) * (N10 + N00))))
                 + (N00 / Total * TwoBaseLog(Total * N00 / ((N01 + N00) * (N10 + N00))));
         }
-        MI.put(Classlabel, dVal);
+        //MI.put(Classlabel, dVal);
         return dVal;
     }
 
@@ -191,7 +204,28 @@ public class TermInfo {
             double N00 = Total - (N11 + N01 + N10);
             dVal =    TwoBaseLog(Total * N11 / ((N11 + N10) * (N11 + N01)));
         }
-        MI.put(Classlabel, dVal);
+        //MI.put(Classlabel, dVal);
+        return dVal;
+    }
+    
+    public double CalculateChiSquare(double N11, double N01, double N10, double Total, String Classlabel)
+    {
+        double dVal;
+        if (N11 == 0 || N01 == 0 || N10 ==0) {
+            dVal = 0.0;
+        } else {
+            double N00 = Total - (N11 + N01 + N10);
+            double E11 = (N11 + N10) * (N11 + N01) / Total;
+            double E01 = (N01 + N00) * (N01 + N11) / Total;
+            double E10 = (N10 + N11) * (N10 + N00) / Total;
+            double E00 = (N00 + N01) * (N00 + N10) / Total;
+            
+            dVal =   ((N11 - E11) * (N11 - E11) / E11 ) + 
+                ((N10 - E10) * (N10 - E10) / E10 ) +
+                ((N01 - E01) * (N01 - E01) / E01 ) +
+                ((N00 - E00) * (N00 - E00) / E00 );
+        }
+        //MI.put(Classlabel, dVal);
         return dVal;
     }
     

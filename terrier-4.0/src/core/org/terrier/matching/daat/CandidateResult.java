@@ -34,9 +34,13 @@ package org.terrier.matching.daat;
  */
 public class CandidateResult implements Comparable<CandidateResult> 
 {
-	private int docid;
-	private double score;
-	private short occurrence;
+	//private int docid;
+	//private double score;
+	//private short occurrence;
+    
+        protected int docid;
+	protected double score;
+	protected short occurrence;
 
 	/** Make a new CandidateResult for a ResultSet based on the
 	 * specified docid.
@@ -87,7 +91,8 @@ public class CandidateResult implements Comparable<CandidateResult>
 	/** Increase the score by the specified amount.
 	 * @param update Amount to increase document score by.
 	 */
-	public void updateScore(double update) 	   { this.score += update;      }
+	public void updateScore(double update) 	   { 
+            this.score += update;      }
 	/** Update the occurrence value of this result.
 	 * @param update Mask to OR with current occurrence
 	 */

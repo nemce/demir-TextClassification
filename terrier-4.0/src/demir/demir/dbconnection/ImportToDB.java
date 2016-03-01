@@ -29,6 +29,8 @@ public class ImportToDB {
             
     public static void ImportLine(Session session, int iRunId, String sLine) throws Exception
     {
+        try
+        {
         String sImageFileName = null;
         int iSepIndex = sLine.indexOf(" ");
         sImageFileName = sLine.substring(0, iSepIndex);
@@ -54,7 +56,14 @@ public class ImportToDB {
                         iRunId, sImageFileName, sLabel, iOrder, dVal, session);
             }
         }
-        session.getTransaction().commit();
+            session.getTransaction().commit();
+        }
+        catch(Exception ex)
+        {
+            session.getTransaction().rollback();
+            logger.error("Could Not Import Result - Run Id : " + iRunId + " " + sLine, ex);
+        }
+        
     }
     
     public static void ImportKeysValues(Session session, int iRunId, 

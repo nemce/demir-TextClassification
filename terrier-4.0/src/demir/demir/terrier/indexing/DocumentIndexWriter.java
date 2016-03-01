@@ -130,6 +130,7 @@ public class DocumentIndexWriter {
             while (!it.endOfPostings()) {
                 it.next();
                 int docid = it.getId();
+                int iTermOccurence = it.getFrequency();
                 IRMedicalQuery mq = new IRMedicalQuery();
                 String docno = metaIndex.getItem(metaIndexDocumentKey, docid);
                 mq.setCollectionId(prm.getCollectionId());
@@ -139,8 +140,9 @@ public class DocumentIndexWriter {
                 for (int j = 0; j < mq.getListICD().size(); j++) {
                     String sLabel = mq.getListICD().get(j);
                     hmClass.putIfAbsent(sLabel, new ClassInfo(sLabel));
-                    hmClass.get(sLabel).AddTerm(sTerm, docno);
+                    hmClass.get(sLabel).AddTerm(sTerm, docno, iTermOccurence);
                     fsTerm.AddClass(sLabel);
+                    fsTerm.AddClassOccurence(sLabel, iTermOccurence);
                 }
             }
             hmTerm.put(sTerm, fsTerm);

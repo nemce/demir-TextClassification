@@ -15,25 +15,45 @@ import java.util.Set;
  * @author nmeltem
  */
 public class ClassInfo {
-    String ClassName;
-    int docCnt =0;
+    private String ClassName;
+    
+    // Sınıftaki doküman sayisi
+    private int docCnt =0;
+    // toplam(her doküman bir sınıfta kaç kez geçiyor)
+    // toplam(bir dokuman bir sınıfta kaç kelime ile temsil ediliyor.)
+    private int docFreq = 0;
+    // toplam(bir dokuman bir sınıfta bir kelimenin kaç kez tekrar edilmesi ile temsil ediliyor.)
+    private int docTermOccurence = 0;
+    
     ArrayList<String> listDocs = new ArrayList<String>();
 
     public ClassInfo(String Label) {
        this.ClassName = Label;
     }
     
-    public void AddTerm(String sTerm, String sDoc)
+    public void AddTerm(String sTerm, String sDoc, int occurence)
     {
         if(!listDocs.contains(sDoc))
         {
             listDocs.add(sDoc);
             docCnt++;
         }
+        docFreq++;
+        docTermOccurence += occurence;
+    }
+    
+    public double GetClassDocCnt()
+    {
+        return (double)docCnt;
     }
     
     public double GetClassDocFrequency()
     {
-        return (double)docCnt;
+        return (double)docFreq;
+    }
+    
+    public double GetClassTermDocOccurence()
+    {
+        return (double)docTermOccurence;
     }
 }
