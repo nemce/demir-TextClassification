@@ -111,6 +111,8 @@ public class ImportToDB {
             objRun.setNormalization(clsPrm.getNormalization_technique());
             objRun.setQueryExpansion(clsPrm.getQeApply() + "-" + clsPrm.getQeMethod() + 
                     "DOCS:" + clsPrm.getQeDocs() + "TERMS:" + clsPrm.getQeTerms());
+            objRun.setFeatureFile(clsPrm.FeaturesFileName);
+            objRun.setMatchingClass(clsPrm.matchingClass);
             
             objRun.setTerrierProps(clsPrm.getPropertiesStream());
             //objRun.setDemirProps(clsPrm.getPropertiesStream().replace("\n", "xx"));

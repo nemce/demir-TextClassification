@@ -32,6 +32,7 @@ public class FeatureGenerator {
         }
         
         //System.out.print("MI By Occurence");
+        //System.out.print("ChiSquare");
         for (Iterator it = hmTerm.keySet().iterator(); it.hasNext();) {
             String keyTerm = (String) it.next();
             TermInfo valueTerm = (TermInfo) hmTerm.get(keyTerm);
@@ -55,18 +56,43 @@ public class FeatureGenerator {
             
                 
                 
-                // MI by Occurence
-                double N1N1 = (double) valueTerm.GetClassOccurences().get(sClassLabel);
-                double N1N0 = TermOccurence - N1N1;
-                /// TODO Meltem ClassDocFrequency ve ClassDocCnt yerine ne koyacağını bulmalısın.
-                double N0N1 = ((ClassInfo) hmClass.get(sClassLabel)).GetClassTermDocOccurence() - N1N1;
-                double MI = hmTerm.get(keyTerm).CalculateMI2(N1N1, N0N1, N1N0, ClassDocTermOccurence, sClassLabel);
+//                // MI by Occurence
+//                double N1N1 = (double) valueTerm.GetClassOccurences().get(sClassLabel);
+//                double N1N0 = TermOccurence - N1N1;
+//                /// TODO Meltem ClassDocFrequency ve ClassDocCnt yerine ne koyacağını bulmalısın.
+//                double N0N1 = ((ClassInfo) hmClass.get(sClassLabel)).GetClassTermDocOccurence() - N1N1;
+//                double MI = hmTerm.get(keyTerm).CalculateMI2(N1N1, N0N1, N1N0, ClassDocTermOccurence, sClassLabel);
+//                hmTerm.get(keyTerm).putMI(sClassLabel, MI);
+//                // MI by Occurence
+                
+                 // Chi by Frequency
+//                double N1N1 = (double) valueTerm.GetClasses().get(sClassLabel);
+//                double N1N0 = TermFreq - N1N1;
+//                double N0N1 = ((ClassInfo) hmClass.get(sClassLabel)).GetClassDocCnt() - N1N1;
+//                double MI = hmTerm.get(keyTerm).CalculateChiSquare(N1N1, N0N1, N1N0, ClassDocCnt, sClassLabel);
+//                hmTerm.get(keyTerm).putMI(sClassLabel, MI);
+                // Chi by Frequency
+                
+                // MI4 by Frequency 1 + log mantığına göre hesaplama yapıldı.
+//                double N1N1 = (double) valueTerm.GetClasses().get(sClassLabel);
+//                double N1N0 = TermFreq - N1N1;
+//                double N0N1 = ((ClassInfo) hmClass.get(sClassLabel)).GetClassDocCnt() - N1N1;
+//                double MI = hmTerm.get(keyTerm).CalculateMI4(N1N1, N0N1, N1N0, ClassDocCnt, sClassLabel);
+//                hmTerm.get(keyTerm).putMI(sClassLabel, MI);
+                // MI4 by Frequency
+                
+                
+                // Inverse Class Frequency
+                double N1N1 = (double) valueTerm.GetClasses().get(sClassLabel);
+                double MI = hmTerm.get(keyTerm).CalculateInverse(N1N1,ClassDocCnt, sClassLabel);
                 hmTerm.get(keyTerm).putMI(sClassLabel, MI);
-                // MI by Occurence
+                // Inverse Class Frequency
+                
             }
         }
         Print(hmClass, hmTerm);
     }
+ 
 
     public static void Print(
         HashMap<String, ClassInfo> hmClass,

@@ -42,11 +42,17 @@ public class Full extends org.terrier.matching.daat.Full {
     /** posting list manager opens and scores postings */
 	PostingListManager plm;
         
-    Map<String, Double> MIValues = new HashMap<>();
+    Map<String, Double> MIValues = null;
 
     public Full(Index index) throws Exception {
         super(index);
-        LoadFeaturesFromFile(ApplicationSetup.getProperty("demir.features.MI", null));
+        MIValues = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile();
+    }
+    
+    public Full(Index index, Map<String, Double> featureValues) throws Exception {
+        super(index);
+        MIValues = featureValues;
+        //LoadFeaturesFromFile(ApplicationSetup.getProperty("demir.features.MI", null));
     }
 
     protected void initialisePostings(MatchingQueryTerms queryTerms) {
@@ -116,29 +122,7 @@ public class Full extends org.terrier.matching.daat.Full {
         }
     }
 
-    private void LoadFeaturesFromFile(String FeaturesFileName) throws java.lang.Exception {
-        if (FeaturesFileName.equals("")) {
-            throw new UnsupportedOperationException("Invalid Features File");
-        }
-        BufferedReader br = null;
-        try {
-            String sCurrentLine;
-            br = new BufferedReader(new FileReader(FeaturesFileName));
-            while ((sCurrentLine = br.readLine()) != null) {
-             String [] sTerm = sCurrentLine.split("\t");
-             MIValues.put(sTerm[0], Double.parseDouble(sTerm[1]));
-            }
-            if (br != null) {
-                    br.close();
-                }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-    }
-    
+   
     /** {@inheritDoc} */
 	@SuppressWarnings("resource") //IterablePosting need not be closed
 	@Override
@@ -203,7 +187,7 @@ public class Full extends org.terrier.matching.daat.Full {
             } while (nextDocid == currentDocId);
             
             
-            currentCandidate.CalculateScore3();
+            currentCandidate.CalculateScore4();
             if ((! targetResultSetSizeReached) || currentCandidate.getScore() > threshold) {
             	//System.err.println("New document " + currentCandidate.getDocId() + " with score " + currentCandidate.getScore() + " passes threshold of " + threshold);
         		

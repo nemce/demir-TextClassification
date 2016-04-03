@@ -137,6 +137,17 @@ public class FeaturedCandidateResult extends
             occurrence |= occurences[i];
         }
     }
+     
+     public void CalculateScore4() {
+        score = 0.0;
+        occurrence = 0;
+        for (int i = 0; i < scores.length; i++) 
+        {
+            score += (scores[i] * features[i]);
+            //score += scores[i];
+            occurrence |= occurences[i];
+        }
+    }
 
     /**
      * Returns the score of this result

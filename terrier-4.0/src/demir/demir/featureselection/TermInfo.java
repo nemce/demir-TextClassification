@@ -202,10 +202,26 @@ public class TermInfo {
             dVal = 0.0;
         } else {
             double N00 = Total - (N11 + N01 + N10);
-            dVal =    TwoBaseLog(Total * N11 / ((N11 + N10) * (N11 + N01)));
+            dVal = TwoBaseLog(Total * N11 / ((N11 + N10) * (N11 + N01)));
         }
         //MI.put(Classlabel, dVal);
         return dVal;
+    }
+    
+    /// Added By Meltem idf formulündeki 1 + log değeri baz alınarak değiştirildi.
+    /// Bu fonksiyon Class İndexing Based term weighting for automatic text Classification
+    /// Makalesindeki sayfa 115 Table 2'de yer alan MI formülüne göre hesaplama yapar.
+    /// Mutula information = log(A*N / (A+B)*(A+C))
+    /// N11 A -  N10 B - N01 C - N00 D
+    public double CalculateMI4(double N11, double N01, double N10, double Total, String Classlabel) {
+        Double dVal;
+        if (N11 == 0 || N01 == 0 || N10 ==0) {
+            dVal = 0.0;
+        } else {
+            //dVal = TwoBaseLog(Total * N11 / ((N11 + N10) * (N11 + N01)));
+            dVal = CalculateMI3(N11, N01, N10, Total, Classlabel);
+        }
+        return (1 + dVal);
     }
     
     public double CalculateChiSquare(double N11, double N01, double N10, double Total, String Classlabel)
@@ -227,6 +243,14 @@ public class TermInfo {
         }
         //MI.put(Classlabel, dVal);
         return dVal;
+    }
+    
+    // N11 -> relation between term ti and Class Ck (Frequency, Ocuurence,etc...)
+    public double CalculateInverse(double N11, double Total, String Classlabel)
+    {
+        if (N11 == 0) 
+            return 0.0;
+        return 1 + TwoBaseLog(Total  / N11 + 1);
     }
     
     protected double TwoBaseLog(double d) {

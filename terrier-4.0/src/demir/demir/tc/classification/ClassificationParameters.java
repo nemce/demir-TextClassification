@@ -131,6 +131,10 @@ public class ClassificationParameters {
     public String NORMALIZATION_MINMAX = "MinMax";
     public String NORMALIZATION_EUCLIDIAN = "Euclid";
     public String NORMALIZATION_None = "None";
+    
+    public String FeaturesFileName = "";
+    
+    public String matchingClass = "";
 
     public int getRunId() {
         return RunId;
@@ -221,6 +225,9 @@ public class ClassificationParameters {
             TrainPrmId = Integer.parseInt(getProperty("tc.irbased.TrainPrmId", ""));
             TestPrmId = Integer.parseInt(getProperty("tc.irbased.TestPrmId", ""));
         }
+        
+        FeaturesFileName = getProperty("demir.features.MI", null);
+        matchingClass = getProperty("trec.matching", "terrier.matching.taat.Full");
 
         docTags = getProperty("TrecDocTags.process", "");
         queryTags = getProperty("TrecQueryTags.process", "");

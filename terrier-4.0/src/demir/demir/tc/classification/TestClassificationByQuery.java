@@ -7,6 +7,7 @@ package demir.tc.classification;
 import demir.dbconnection.ImportToDB;
 import demir.terrier.querying.IRTCDocNoOutputFormat;
 import demir.terrier.querying.QueryProcessor;
+import demir.terrier.utility.FeatureLoader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -123,6 +124,7 @@ public class TestClassificationByQuery {
      *
      */
     protected Index index = null;
+    protected Map features = null;
     protected static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(TestClassificationByQuery.class);
     File[] files = null;
     ArrayList<String> queries = null;
@@ -146,7 +148,16 @@ public class TestClassificationByQuery {
             logger.info("time to intialise index : "
                     + ((endLoading - startLoading) / 1000.0D));
         }
+        features = FeatureLoader.LoadFeaturesFromFile();
+        if (logger.isInfoEnabled()) {
+            if(features != null)
+                logger.info("Features Loaded from File");
+            else
+                logger.info("Features are not loaded");
+        }
     }
+    
+    
 
     public void closeIndex() {
         if (index != null) {
@@ -361,8 +372,9 @@ public class TestClassificationByQuery {
             
             // TODO MELTEM
  /**/
+          
           org.terrier.applications.batchquerying.TRECQuerying querying
-                  = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index);
+                  = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index, features);
           SearchRequest srq = querying.processOneQuery(c, isParameterValueSpecified);
           demir.terrier.querying.IRTCDocNoOutputFormat irof = new IRTCDocNoOutputFormat(index);
           irof.printResults(null, srq, sRes, sRes, ir.getClsPrm().getMaxRetDocSize());
