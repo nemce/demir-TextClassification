@@ -148,6 +148,20 @@ public class FeaturedCandidateResult extends
             occurrence |= occurences[i];
         }
     }
+     
+     /// ICF için tasarlanmıştır
+     /// ICFnin olumlu etkisini arttırmanın yöntemleri aranmıştır.
+     // score * feature^2
+      public void CalculateScore5() {
+        score = 0.0;
+        occurrence = 0;
+        for (int i = 0; i < scores.length; i++) 
+        {
+            score += (scores[i] * features[i] * features[i]);
+            //score += scores[i];
+            occurrence |= occurences[i];
+        }
+    }
 
     /**
      * Returns the score of this result
