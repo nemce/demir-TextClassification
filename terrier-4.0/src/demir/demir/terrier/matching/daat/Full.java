@@ -187,7 +187,8 @@ public class Full extends org.terrier.matching.daat.Full {
             } while (nextDocid == currentDocId);
             
             
-            currentCandidate.CalculateScore4();
+            //currentCandidate.CalculateScore4();
+            currentCandidate.CalculateScore5();
             if ((! targetResultSetSizeReached) || currentCandidate.getScore() > threshold) {
             	//System.err.println("New document " + currentCandidate.getDocId() + " with score " + currentCandidate.getScore() + " passes threshold of " + threshold);
         		
