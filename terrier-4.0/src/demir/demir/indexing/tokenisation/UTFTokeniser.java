@@ -13,6 +13,8 @@ import org.terrier.utility.ApplicationSetup;
 /**
  *
  * @author nmeltem
+ * ETC DOSYASINA PARAMETRESİ EKLENEREK CAGIRILIR.
+ * tokeniser=demir.indexing.tokenisation.UTFTokeniser 
  */
 public class UTFTokeniser extends org.terrier.indexing.tokenisation.Tokeniser{
     
