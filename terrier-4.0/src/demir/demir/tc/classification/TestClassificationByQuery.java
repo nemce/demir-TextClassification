@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import org.hibernate.Session;
 import org.terrier.querying.SearchRequest;
 import org.terrier.structures.Index;
+import org.terrier.utility.ApplicationSetup;
 
 /**
  *
@@ -33,8 +34,7 @@ public class TestClassificationByQuery {
 
     public static void main(String[] args) {
         IRBasedTextClassification ibtc = new IRBasedTextClassification();
-        
-        
+
         String sTestFolder = ibtc.getClsPrm().getTestFolderPath();
         String sTopicFile = ibtc.getClsPrm().getTopicFileName();
         if (!sTestFolder.isEmpty()) {
@@ -146,18 +146,19 @@ public class TestClassificationByQuery {
         long endLoading = System.currentTimeMillis();
         if (logger.isInfoEnabled()) {
             logger.info("time to intialise index : "
-                    + ((endLoading - startLoading) / 1000.0D));
+                + ((endLoading - startLoading) / 1000.0D));
         }
-        features = FeatureLoader.LoadFeaturesFromFile();
-        if (logger.isInfoEnabled()) {
-            if(features != null)
-                logger.info("Features Loaded from File");
-            else
-                logger.info("Features are not loaded");
+        if (ApplicationSetup.getProperty("trec.matching", "").equals("demir.terrier.matching.daat.Full")) {
+            features = FeatureLoader.LoadFeaturesFromFile();
+            if (logger.isInfoEnabled()) {
+                if (features != null) {
+                    logger.info("Features Loaded from File");
+                } else {
+                    logger.info("Features are not loaded");
+                }
+            }
         }
     }
-    
-    
 
     public void closeIndex() {
         if (index != null) {
@@ -279,7 +280,7 @@ public class TestClassificationByQuery {
                 }
                 if (ir.clsPrm.WriteClassificationRes.equals(ir.clsPrm.WRITE_CLASSIFICATION_RES_DB)) {
                     ImportToDB.ImportKeysValues(session, ir.clsPrm.RunId,
-                            irQuery.sQueryId, keys, values);
+                        irQuery.sQueryId, keys, values);
                 } else {
                     ResultFileWriter.print(sResult);
                 }
@@ -294,7 +295,7 @@ public class TestClassificationByQuery {
         ResultFileWriter.close();
         long endLoading = System.currentTimeMillis();
         System.out.println("time to classifiy All Queries : "
-                + ((endLoading - startLoading) / 1000.0D));
+            + ((endLoading - startLoading) / 1000.0D));
     }
 
     private void ProcessFile(String sFilePath, String sFileName, String queryId, Session session) throws Exception {
@@ -306,7 +307,7 @@ public class TestClassificationByQuery {
             String sResult = ClassifyQuery(queryId, sQueryText, sFileName, session);
             long endLoading = System.currentTimeMillis();
             System.out.println("time to classifiy Query : "
-                    + ((endLoading - startLoading) / 1000.0D));
+                + ((endLoading - startLoading) / 1000.0D));
         } catch (Exception eSys) {
             logger.error("Could not process file " + sFileName, eSys);
         }
@@ -334,7 +335,7 @@ public class TestClassificationByQuery {
 
     public static String GenerateQueryFile(String queryId, String sWholeText, String[] QueryTags) {
         String sQueryText = "<TOP>"
-                + "<NUM>" + queryId + "<NUM>";
+            + "<NUM>" + queryId + "<NUM>";
         for (int i = 0; i < QueryTags.length; i++) {
             int iStartIndex = sWholeText.indexOf("<" + QueryTags[i] + ">");
             int iEndIndex = sWholeText.indexOf("</" + QueryTags[i] + ">");
@@ -362,23 +363,20 @@ public class TestClassificationByQuery {
             double c = 1.0;
             Boolean isParameterValueSpecified = false;
             String sResult = null;
-            
+
             //21.12.2015 'te kapatıldı.
             /*
-            demir.terrier.querying.QueryProcessor qp = new QueryProcessor(pQueryText, pQueryId, index);
-            SearchRequest srq = qp.processOneQuery(c, true);
-            */
-            
-            
+             demir.terrier.querying.QueryProcessor qp = new QueryProcessor(pQueryText, pQueryId, index);
+             SearchRequest srq = qp.processOneQuery(c, true);
+             */
             // TODO MELTEM
  /**/
-          
-          org.terrier.applications.batchquerying.TRECQuerying querying
-                  = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index, features);
-          SearchRequest srq = querying.processOneQuery(c, isParameterValueSpecified);
-          demir.terrier.querying.IRTCDocNoOutputFormat irof = new IRTCDocNoOutputFormat(index);
-          irof.printResults(null, srq, sRes, sRes, ir.getClsPrm().getMaxRetDocSize());
-                       
+            org.terrier.applications.batchquerying.TRECQuerying querying
+                = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index, features);
+            SearchRequest srq = querying.processOneQuery(c, isParameterValueSpecified);
+            demir.terrier.querying.IRTCDocNoOutputFormat irof = new IRTCDocNoOutputFormat(index);
+            irof.printResults(null, srq, sRes, sRes, ir.getClsPrm().getMaxRetDocSize());
+
             /// v3.5 içindi kapatıldı.
             //java.util.ArrayList<TRECQuerying.OneQueryOutputFormat> ls;
             //ls = TrecTerrier.RequestQueryReturnSearchResult(pQueryId, pQueryText, index);

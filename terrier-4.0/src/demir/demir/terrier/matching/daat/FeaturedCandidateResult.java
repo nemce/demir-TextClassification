@@ -48,6 +48,11 @@ public class FeaturedCandidateResult extends
     public void updateScore(int i, double update) {
         this.scores[i] += update;
     }
+    
+    public void UpdateScoreByDocWeight(double docWeight)
+    {
+        this.score = this.score * docWeight;
+    }
 
     /**
      * Update the occurrence value of this result.
@@ -127,6 +132,8 @@ public class FeaturedCandidateResult extends
         }
     }
     
+    /* WHM + SQRT(FEA) */
+    
      public void CalculateScore3() {
         score = 0.0;
         occurrence = 0;
@@ -138,6 +145,7 @@ public class FeaturedCandidateResult extends
         }
     }
      
+    // WHM * FEA 
      public void CalculateScore4() {
         score = 0.0;
         occurrence = 0;
@@ -159,6 +167,16 @@ public class FeaturedCandidateResult extends
         {
             score += (scores[i] * features[i] * features[i]);
             //score += scores[i];
+            occurrence |= occurences[i];
+        }
+    }
+      
+       public void CalculateScoreNormal() {
+        score = 0.0;
+        occurrence = 0;
+        for (int i = 0; i < scores.length; i++) 
+        {
+            score += scores[i];
             occurrence |= occurences[i];
         }
     }

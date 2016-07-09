@@ -7,6 +7,7 @@ package demir.featureselection;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import org.terrier.matching.models.WeightingModelLibrary;
 
 /**
  *
@@ -19,7 +20,14 @@ public class TermInfo {
         
         //mi.CalculateMI(49, 141, 27652, 774106, "AA");
         //mi.CalculateMI(0.0, 19.0, 369.0, 6010.0, "AA");
-        mi.CalculateChiSquare(49, 141, 27652, 801948, "AA");
+        //mi.CalculateChiSquare(49, 141, 27652, 801948, "AA");
+        
+        double k = mi.TwoBaseLog(24);
+        double j = WeightingModelLibrary.log(24);
+        
+        k = mi.TwoBaseLog(2);
+        j = WeightingModelLibrary.log(2);
+        
     }
 
     int TermId;
@@ -28,6 +36,8 @@ public class TermInfo {
     HashMap<String, Double> MI;
     double TermFrequency = 0.0;
     double TermOccurence = 0.0;
+    // # of Classes term ti Occurs in
+    double   c_ti = 0.0;
 
     public TermInfo(int TermId) {
         this.Classes = new HashMap<>();
@@ -161,6 +171,29 @@ public class TermInfo {
         }
         return TermOccurence;
     }
+    
+    /// #of Classes ti occurs
+    public double CalculateC_ti()
+    {
+        c_ti = 0.0;
+        try {
+            for (Iterator it = ClassOccurence.values().iterator(); it.hasNext();) {
+                if((double) it.next() > 0.0)
+                {
+                    c_ti+=1;
+                }
+            }
+        } catch (Exception eSys) {
+            System.out.println("Error : " + TermId);
+        }
+        return c_ti;
+    }
+    
+    public double CalculateInverseClassFrequency()
+    {
+        CalculateC_ti();
+        return CalculateInverse(c_ti, Classes.size());
+    }
 
 
     public double CalculateMI(double N11, double N01, double N10, double N00, String Classlabel) {
@@ -245,13 +278,14 @@ public class TermInfo {
         return dVal;
     }
     
-    // N11 -> relation between term ti and Class Ck (Frequency, Ocuurence,etc...)
-    public double CalculateInverse(double N11, double Total, String Classlabel)
+    public double CalculateInverse(double dVal, double Total)
     {
-        if (N11 == 0) 
+        if (dVal == 0) 
             return 0.0;
-        return 1 + TwoBaseLog(Total  / N11 + 1);
+        //return TwoBaseLog(Total  / N11 + 1);
+        return WeightingModelLibrary.log(Total/dVal + 1);
     }
+    
     
     protected double TwoBaseLog(double d) {
         return Math.log10(d) / Math.log10(2);

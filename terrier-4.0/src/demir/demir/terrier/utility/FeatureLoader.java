@@ -17,12 +17,22 @@ import org.terrier.utility.ApplicationSetup;
  * @author nmeltem
  */
 public class FeatureLoader {
-     public static  Map LoadFeaturesFromFile()  {
-
-        String FeaturesFileName = ApplicationSetup.getProperty("demir.features.MI", null);
-        if (FeaturesFileName.equals("")) {
+    
+     public static  Map LoadFeaturesFromFile()
+     {
+        String FeaturesFileName = ApplicationSetup.getProperty("demir.features.MI", "");
+        if (FeaturesFileName.equals(null) || FeaturesFileName.equals("")) {
             return null;
         }
+         return LoadFeaturesFromFile(FeaturesFileName);
+     }
+    
+     public static  Map LoadFeaturesFromFile(String FeaturesFileName)  {
+
+         if ( FeaturesFileName.equals(null) || FeaturesFileName.equals("") ) {
+            return null;
+        }
+         
         Map<String, Double> featureValues = new HashMap<>();
         BufferedReader br = null;
         String sCurrentLine = null;
@@ -31,11 +41,12 @@ public class FeatureLoader {
             while ((sCurrentLine = br.readLine()) != null) {
              String [] sTerm = sCurrentLine.split("\t");
              featureValues.put(sTerm[0], Double.parseDouble(sTerm[1]));
-             System.out.println(sCurrentLine);
+             //System.out.println(sCurrentLine);
             }
             if (br != null) {
                     br.close();
                 }
+            System.out.println(FeaturesFileName + " loaded");
         } 
         catch (IOException e) {
             
@@ -54,6 +65,7 @@ public class FeatureLoader {
             System.out.println(sCurrentLine);
             e.printStackTrace();
         }
+        
         return featureValues;
     }
     

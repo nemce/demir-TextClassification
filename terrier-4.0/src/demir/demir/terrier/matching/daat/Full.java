@@ -42,16 +42,28 @@ public class Full extends org.terrier.matching.daat.Full {
     /** posting list manager opens and scores postings */
 	PostingListManager plm;
         
-    Map<String, Double> MIValues = null;
+    Map<String, Double> TermFeas = null;
+    // TODO MELTEM değiştirilecek.
+    // 01052016
+    double default_feature_val = 1.0;
 
+    // 19.06.2016 Added By Meltem
+    Map<String, Double> DocFeas = null;
+    
+    
     public Full(Index index) throws Exception {
         super(index);
-        MIValues = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile();
+        TermFeas = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile();
+        DocFeas = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
+          ApplicationSetup.getProperty("demir.features.Docs", null));
     }
     
     public Full(Index index, Map<String, Double> featureValues) throws Exception {
         super(index);
-        MIValues = featureValues;
+        TermFeas = featureValues;
+       DocFeas = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
+           ApplicationSetup.getProperty("demir.features.Docs", ""));
+    
         //LoadFeaturesFromFile(ApplicationSetup.getProperty("demir.features.MI", null));
     }
 
@@ -77,10 +89,10 @@ public class Full extends org.terrier.matching.daat.Full {
                 } 
                 /// Added By Meltem 27122015
                 FeaturedLexiconEntry tfle = new FeaturedLexiconEntry((BasicLexiconEntry) t);
-                if(MIValues.containsKey(queryTerm))
-                    tfle.SetMiValue(MIValues.get(queryTerm));
+                if(TermFeas != null && TermFeas.containsKey(queryTerm))
+                    tfle.SetMiValue(TermFeas.get(queryTerm));
                 else
-                    tfle.SetMiValue(0.0);
+                    tfle.SetMiValue(default_feature_val);
                 /// Added By Meltem 27122015
                 queryTermsToMatchList.add(new MapEntry<String, LexiconEntry>(queryTerm, tfle));
 
@@ -164,7 +176,12 @@ public class Full extends org.terrier.matching.daat.Full {
             // We create a new candidate for the doc id considered
             //System.out.println("Doc : " + currentDocId);
             FeaturedCandidateResult currentCandidate = makeCandidateResult(currentDocId, plm.size());
-            
+            double docWeight = 1;
+            String docName = index.getMetaIndex().getAllItems(currentDocId)[0];
+            if(DocFeas!= null && DocFeas.containsKey(docName))
+            {
+                docWeight = DocFeas.get(docName).doubleValue();
+            }
             int currentPostingListIndex = (int) (postingHeap.firstLong() & 0xFFFF);
                     int nextDocid;
             //System.err.println("currentDocid="+currentDocId+" currentPostingListIndex="+currentPostingListIndex);
@@ -186,9 +203,13 @@ public class Full extends org.terrier.matching.daat.Full {
                 nextDocid = (int) (elem >>> 32);
             } while (nextDocid == currentDocId);
             
-            
+            currentCandidate.CalculateScoreNormal();
+            //currentCandidate.CalculateScore3();
             //currentCandidate.CalculateScore4();
-            currentCandidate.CalculateScore5();
+            //currentCandidate.CalculateScore5();
+            //currentCandidate.CalculateScore2();
+            currentCandidate.UpdateScoreByDocWeight(docWeight);
+            
             if ((! targetResultSetSizeReached) || currentCandidate.getScore() > threshold) {
             	//System.err.println("New document " + currentCandidate.getDocId() + " with score " + currentCandidate.getScore() + " passes threshold of " + threshold);
         		

@@ -14,14 +14,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.Session;
+import org.terrier.matching.models.Idf;
+import org.terrier.matching.models.TF_IDF;
+import org.terrier.matching.models.WeightingModel;
 import org.terrier.structures.DocumentIndexEntry;
 import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
+import org.terrier.structures.IndexUtil;
 import static org.terrier.structures.IndexUtil.close;
 import org.terrier.structures.Lexicon;
+import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.MetaIndex;
 import org.terrier.structures.Pointer;
 import org.terrier.structures.PostingIndex;
@@ -42,7 +48,8 @@ public class DocumentIndexWriter {
         Index index = diw.loadIndex();
         try {
             //diw.printDocumentIndex(index, "document");
-            diw.GetInvertedIndex(index, null);
+            //diw.GetInvertedIndex(index, null);
+            diw.printLexicon(index, "lexicon");
         } catch (Exception ex) {
             Logger.getLogger(DocumentIndexWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -67,9 +74,11 @@ public class DocumentIndexWriter {
     // SVD algoritmasını denemek için hazırlanmıştır.
     protected void printDocumentIndex(Index index, String structureName) throws IOException {
 
-        Iterator<DocumentIndexEntry> iterator = (Iterator<DocumentIndexEntry>) index.getIndexStructureInputStream(structureName);
+        Iterator<DocumentIndexEntry> iterator = 
+            (Iterator<DocumentIndexEntry>) index.getIndexStructureInputStream(structureName);
 
-        String metaIndexDocumentKey = ApplicationSetup.getProperty("trec.querying.outputformat.docno.meta.key", "docno");
+        String metaIndexDocumentKey = 
+            ApplicationSetup.getProperty("trec.querying.outputformat.docno.meta.key", "docno");
         final MetaIndex metaIndex = index.getMetaIndex();
         int docid = 0;
         DirectIndex di = new DirectIndex((IndexOnDisk) index, "direct");
@@ -79,24 +88,25 @@ public class DocumentIndexWriter {
 
         while (iterator.hasNext()) {
             DocumentIndexEntry die = iterator.next();
-            System.out.print(docid + ": " + die.toString() + " ");
+            //System.out.print(docid + ": " + die.toString() + " ");
             String docno = metaIndex.getItem(metaIndexDocumentKey, docid);
             int[][] docTerms = di.getTerms(docid);
-            System.out.println(docid + ": " + die.toString()
-                    + " Doc No : " + docno
-                    + " Doc Length : " + die.getDocumentLength()
-                    + " # of entries : " + die.getNumberOfEntries());
+//            System.out.println(docid + ": " + die.toString()
+//                    + " Doc No : " + docno
+//                    + " Doc Length : " + die.getDocumentLength()
+//                    + " # of entries : " + die.getNumberOfEntries());
 
             String sLine = "";
             for (int i = 0; i < docTerms[0].length; i++) {
-                String sTerm = lx.getLexiconEntry(docTerms[0][i]).getKey() + " ";
-                for (int j = 0; j < docTerms[1][i]; j++) {
-                    // System.out.print(sTerm);
-                    sLine += sTerm;
-
-                }
+                String sTerm = lx.getLexiconEntry(docTerms[0][i]).getKey().toString();
+                System.out.println(docno + "," + sTerm + "," + docTerms[1][i]);
+//                for (int j = 0; j < docTerms[1][i]; j++) {
+//                    // System.out.print(sTerm);
+//                    sLine += sTerm;
+//
+//                }
             }
-            pwm.println(sLine);
+//          pwm.println(sLine);
             if (docid % 1000 == 0) {
                 pwm.flush();
             }
@@ -107,6 +117,80 @@ public class DocumentIndexWriter {
         close(iterator);
     }
 
+    
+    protected void printWeightedDocumentIndex(Index index, String structureName) throws IOException {
+
+        Iterator<DocumentIndexEntry> iterator = 
+            (Iterator<DocumentIndexEntry>) index.getIndexStructureInputStream(structureName);
+
+        String metaIndexDocumentKey =
+            ApplicationSetup.getProperty("trec.querying.outputformat.docno.meta.key", "docno");
+        final MetaIndex metaIndex = index.getMetaIndex();
+        int docid = 0;
+        DirectIndex di = new DirectIndex((IndexOnDisk) index, "direct");
+        Lexicon lx = index.getLexicon();
+
+        PrintWriter pwm = new PrintWriter("D:\\Datasets\\20NEWSGROUP\\20news-18828\\documentindex.txt");
+
+        while (iterator.hasNext()) {
+            DocumentIndexEntry die = iterator.next();
+            //System.out.print(docid + ": " + die.toString() + " ");
+            String docno = metaIndex.getItem(metaIndexDocumentKey, docid);
+            int[][] docTerms = di.getTerms(docid);
+//            System.out.println(docid + ": " + die.toString()
+//                    + " Doc No : " + docno
+//                    + " Doc Length : " + die.getDocumentLength()
+//                    + " # of entries : " + die.getNumberOfEntries());
+
+            String sLine = "";
+            
+            double docLength = die.getDocumentLength();
+            for (int i = 0; i < docTerms[0].length; i++) {
+                LexiconEntry lxe = (LexiconEntry) lx.getLexiconEntry(docTerms[0][i]);
+                String sTerm =  lx.getLexiconEntry(docTerms[0][i]).getKey().toString();
+                TF_IDF wm = new TF_IDF();
+                //wm = (WeightingModel) queryTerms.getTermWeightingModels(queryTerm)[j].clone();
+		wm.setCollectionStatistics(index.getCollectionStatistics());
+		wm.setEntryStatistics(lxe.getWritableEntryStatistics());
+		//wm.setRequest(queryTerms.getRequest());
+		wm.setKeyFrequency(1);
+		IndexUtil.configure(index, wm);
+		wm.prepare();
+                double tf = docTerms[1][i];
+                wm.score(tf, docLength);
+                System.out.println(docno + "," + sTerm + "," + docTerms[1][i]);
+//                for (int j = 0; j < docTerms[1][i]; j++) {
+//                    // System.out.print(sTerm);
+//                    sLine += sTerm;
+//
+//                }
+            }
+//          pwm.println(sLine);
+            if (docid % 1000 == 0) {
+                pwm.flush();
+            }
+            docid++;
+        }
+
+        pwm.close();
+        close(iterator);
+    }
+
+    
+    public static void printLexicon(Index index, String structureName) throws IOException
+    {
+                double numberOfDocs = index.getDocumentIndex().getNumberOfDocuments();
+                Idf idf = new Idf(numberOfDocs);
+		Iterator<Map.Entry<?,LexiconEntry>> lexiconStream = 
+			(Iterator<Map.Entry<?,LexiconEntry>>)index.getIndexStructureInputStream(structureName);
+		while (lexiconStream.hasNext())
+		{
+			Map.Entry<?, LexiconEntry> lee = lexiconStream.next();
+                        double idfVal = idf.idf(lee.getValue().getDocumentFrequency());
+                        System.out.println(lee.getKey().toString()+","+ idfVal +","+lee.getValue().toString());
+		}
+		IndexUtil.close(lexiconStream);
+	}
     // GetInvertedIndex fonksiyonu her bir termin hangi dokumanlarD geçtiğini bulur.
     // Dokuman listesi üzerinden class bilgisine ulaşılır.
     // Feature Selection algoritmalarının denenmesi için hazırlanmıştır.
@@ -153,4 +237,6 @@ public class DocumentIndexWriter {
         
         FeatureGenerator.FeatureGenerator(hmClass, hmTerm);
     }
+
+
 }

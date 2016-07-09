@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.Session;
 import demir.terrier.querying.IRTCDocNoOutputFormat;
+import org.terrier.utility.ApplicationSetup;
 
 /**
  *
@@ -98,9 +99,13 @@ public class IRBasedTextClassification {
                 ReadRetrievalResults(sQueryId, ls);
             }
             long endLoading = System.currentTimeMillis();
+            
+            Map<String, Double> CategoryFeas = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
+           ApplicationSetup.getProperty("demir.features.Category", ""));
+             
 //            System.out.println("time to intialise index : "
 //            + ((endLoading - startLoading) / 1000.0D));
-            AssignClassLabels();
+            AssignClassLabels(CategoryFeas);
 
             /// TODO MELTEM hem Key Hem Value dönmesi sağlanacak
             keys = new String[irQuery.getListICDAssignedKeys().size()];
@@ -137,7 +142,7 @@ public class IRBasedTextClassification {
     public void ProcessQueries(String sResFile)
             throws Exception {
         ReadRetrievalResults(sResFile);
-        AssignClassLabels();
+        AssignClassLabels(null);
     }
 
     public void AddQuery(IRMedicalQuery irQuery) throws Exception {
@@ -267,7 +272,7 @@ public class IRBasedTextClassification {
 
     /// Her Sorgu için döndürülen dokuman listesine bağlı olarak parametre 
     /// olarak gelen ağırlıklandırma yöntemine göre algoritmayı çalıştırır.
-    private void AssignClassLabels()
+    private void AssignClassLabels(Map<String,Double> classFeas)
             throws Exception {
 
         Iterator i = QrySet.entrySet().iterator();
@@ -316,6 +321,28 @@ public class IRBasedTextClassification {
                             listRes.put(sICDCode, d);
                         } else {
                             listRes.put(sICDCode, constantval);
+                        }
+                    }
+                    else if (clsPrm.getLabelWeighting().equals(clsPrm.LABEL_WEIGHTING_CATE_WEIGHTED_DOCSIM)) {
+                        Double ClassWeight = classFeas.get(sICDCode);
+                        if (listRes.containsKey(sICDCode)) {
+                            Double d = dVal * ClassWeight + listRes.get(sICDCode);
+                            /*to do meltem
+                            Class weightler bulunup eklenecek.*/
+                            listRes.put(sICDCode, d);
+                        } else {
+                            listRes.put(sICDCode, dVal * ClassWeight);
+                        }
+                    }
+                    else if (clsPrm.getLabelWeighting().equals(clsPrm.LABEL_WEIGHTING_CATE_WEIGHT)) {
+                        Double ClassWeight = classFeas.get(sICDCode);
+                        if (listRes.containsKey(sICDCode)) {
+                            Double d = ClassWeight + listRes.get(sICDCode);
+                            /*to do meltem
+                            Class weightler bulunup eklenecek.*/
+                            listRes.put(sICDCode, d);
+                        } else {
+                            listRes.put(sICDCode, ClassWeight);
                         }
                     }
                     else {

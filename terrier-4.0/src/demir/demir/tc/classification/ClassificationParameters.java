@@ -124,6 +124,8 @@ public class ClassificationParameters {
     public String LABEL_WEIGHTING_ROWINDEX = "ROWINDEX";
     public String LABEL_WEIGHTING_DOCSIM_M_ROWINDEX = "DMR";
     public String LABEL_WEIGHTING_LCNT = "L_CNT";
+    public String LABEL_WEIGHTING_CATE_WEIGHT = "C_WGHT";
+    public String LABEL_WEIGHTING_CATE_WEIGHTED_DOCSIM = "C_WGHT_DOCSIM";
 
     public String LABEL_FILTERING_TRH = "TRH";
     public String LABEL_FILTERING_FIRSTN = "FIRSTN";
