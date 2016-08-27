@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,20 +90,26 @@ public class TestClassificationByQuery {
         } catch (IOException ex) {
             Logger.getLogger(TestClassificationByQuery.class.getName()).log(Level.SEVERE, null, ex);
         }
-        ArrayList<String> queries = new ArrayList<>();
+        Map<String, String> queries = new HashMap<String, String>();
         //String sTopicStartTag = "<DOC>";
         //String sTopicEndTag = "</DOC>";
         String sTopicStartTag = "<TOP>";
         String sTopicEndTag = "</TOP>";
+        String sFIDStartTag = "<FID>";
+        String sFIDEndTag = "<FID>";
         int iQueryId = 0;
         while (sWholeText != null && !sWholeText.isEmpty()) {
             int iStartIndex = sWholeText.indexOf(sTopicStartTag);
             int iEndIndex = sWholeText.indexOf(sTopicEndTag);
-
             String QueryText = sWholeText.substring(iStartIndex, iEndIndex + sTopicEndTag.length());
+             
+            int iStartIndex1 = QueryText.indexOf(sFIDStartTag);
+            int iEndIndex1 = QueryText.lastIndexOf(sFIDEndTag);
+            String QueryName = QueryText.substring(iStartIndex1 + sFIDEndTag.length(), iEndIndex1);
+            
             ++iQueryId;
             QueryText = TestClassificationByQuery.GenerateQueryFile(String.valueOf(iQueryId), QueryText, ibtc.clsPrm.getQueryTagList());
-            queries.add(QueryText);
+            queries.put(QueryName, QueryText);
 
             if (iEndIndex + sTopicEndTag.length() == sWholeText.length()) {
                 break;
@@ -129,7 +137,7 @@ public class TestClassificationByQuery {
     protected Map features = null;
     protected static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(TestClassificationByQuery.class);
     File[] files = null;
-    ArrayList<String> queries = null;
+    Map<String, String> queries = null;
 
     IRBasedTextClassification ir = null;
     //// Her thread için Farklı Query id'ler oluşturmak için kullanılmıştır.
@@ -175,7 +183,7 @@ public class TestClassificationByQuery {
         this.files = files;
     }
 
-    public void setQueries(ArrayList<String> queries) {
+    public void setQueries(Map<String, String> queries) {
         this.queries = queries;
     }
 
@@ -238,15 +246,14 @@ public class TestClassificationByQuery {
                 }
             }
         } else { /// topic file dan oku
-            for (int fileInList = 0; fileInList < queries.size(); fileInList++) {
+            Iterator entries = queries.entrySet().iterator();
+            int fileInList = 0;
+            while (entries.hasNext()) {
                 try {
-                    String QueryId = String.valueOf(fileInList);
-                    //int iStartIndex = queries.get(fileInList).indexOf("<ID>");
-                    //int iEndIndex = queries.get(fileInList).lastIndexOf("</ID>");
-                    
-                    int iStartIndex = queries.get(fileInList).indexOf("<NUM>");
-                    int iEndIndex = queries.get(fileInList).lastIndexOf("<NUM>");
-                    String sFileName = queries.get(fileInList).substring(iStartIndex + 5, iEndIndex);
+                    String QueryId = String.valueOf(++fileInList);
+                    Entry thisEntry = (Entry) entries.next();
+                    String sFileName = (String) thisEntry.getKey();
+                    String sQueryValue = (String) thisEntry.getValue();
 
                     if (ir.clsPrm.isUseResultFile() == true) {
                         IRMedicalQuery irQuery = new IRMedicalQuery();
@@ -255,7 +262,7 @@ public class TestClassificationByQuery {
                         irQuery.setsQDType("Q");
                         ir.AddQuery(irQuery);
                     } else {
-                        String sResult = ClassifyQuery(QueryId, queries.get(fileInList), sFileName, session);
+                        String sResult = ClassifyQuery(QueryId, sQueryValue, sFileName, session);
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(TestClassificationByQuery.class.getName()).log(Level.SEVERE, null, ex);
