@@ -89,8 +89,10 @@ public class TestClassificationByQuery {
             Logger.getLogger(TestClassificationByQuery.class.getName()).log(Level.SEVERE, null, ex);
         }
         ArrayList<String> queries = new ArrayList<>();
-        String sTopicStartTag = "<DOC>";
-        String sTopicEndTag = "</DOC>";
+        //String sTopicStartTag = "<DOC>";
+        //String sTopicEndTag = "</DOC>";
+        String sTopicStartTag = "<TOP>";
+        String sTopicEndTag = "</TOP>";
         int iQueryId = 0;
         while (sWholeText != null && !sWholeText.isEmpty()) {
             int iStartIndex = sWholeText.indexOf(sTopicStartTag);
@@ -239,9 +241,12 @@ public class TestClassificationByQuery {
             for (int fileInList = 0; fileInList < queries.size(); fileInList++) {
                 try {
                     String QueryId = String.valueOf(fileInList);
-                    int iStartIndex = queries.get(fileInList).indexOf("<ID>");
-                    int iEndIndex = queries.get(fileInList).lastIndexOf("</ID>");
-                    String sFileName = queries.get(fileInList).substring(iStartIndex + 4, iEndIndex);
+                    //int iStartIndex = queries.get(fileInList).indexOf("<ID>");
+                    //int iEndIndex = queries.get(fileInList).lastIndexOf("</ID>");
+                    
+                    int iStartIndex = queries.get(fileInList).indexOf("<NUM>");
+                    int iEndIndex = queries.get(fileInList).lastIndexOf("<NUM>");
+                    String sFileName = queries.get(fileInList).substring(iStartIndex + 5, iEndIndex);
 
                     if (ir.clsPrm.isUseResultFile() == true) {
                         IRMedicalQuery irQuery = new IRMedicalQuery();
