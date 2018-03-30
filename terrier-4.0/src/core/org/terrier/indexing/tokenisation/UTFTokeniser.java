@@ -80,8 +80,8 @@ public class UTFTokeniser extends Tokeniser {
 	 */
 	protected final static boolean DROP_LONG_TOKENS = true;
 	
-	static final boolean LOWERCASE = Boolean.parseBoolean(ApplicationSetup.getProperty("lowercase", "true"));
-	static final int MAX_TERM_LENGTH = ApplicationSetup.MAX_TERM_LENGTH;
+	protected static final boolean LOWERCASE = Boolean.parseBoolean(ApplicationSetup.getProperty("lowercase", "true"));
+	protected static final int MAX_TERM_LENGTH = ApplicationSetup.MAX_TERM_LENGTH;
 	
 	static class UTFTokenStream extends TokenStream
 	{

@@ -59,8 +59,9 @@ public class Roberts_TF  extends WeightingModel {
 	 */
 	public double score(double tf, double docLength) {
 		double Robertson_tf = k_1*tf/(tf+k_1*(1-b+b*docLength/averageDocumentLength));
-		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
-		return keyFrequency * Robertson_tf * idf;
+		//double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
+		//return keyFrequency * Robertson_tf * idf;
+                return Robertson_tf;
 	}
         
 	/**
@@ -87,8 +88,9 @@ public class Roberts_TF  extends WeightingModel {
 		double keyFrequency) 
 	{
 		double Robertson_tf = k_1*tf/(tf+k_1*(1-b+b*docLength/averageDocumentLength));
-		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
-		return keyFrequency*Robertson_tf * idf;
+		//double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
+		//return keyFrequency*Robertson_tf * idf;
+                return Robertson_tf;
 
 	}
 
