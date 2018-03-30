@@ -5,6 +5,7 @@
  */
 package demir.featureselection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.terrier.matching.models.WeightingModelLibrary;
@@ -46,6 +47,18 @@ public class TermInfo {
         this.MI = new HashMap<>();
         this.TermId = TermId;
     }
+    
+    public TermInfo(int TermId, ArrayList  lsClass) {
+        this.Classes = new HashMap<String, Double>();
+        this.ClassOccurence = new HashMap<String, Double>();
+        for(int i = 0; i < lsClass.size(); i++)
+        {
+            Classes.put((String) lsClass.get(i), 0.0);
+            ClassOccurence.put((String) lsClass.get(i), 0.0);
+        }
+        this.MI = new HashMap<>();
+        this.TermId = TermId;
+    }
 
     private TermInfo() {
         this.Classes = new HashMap<>();
@@ -84,7 +97,27 @@ public class TermInfo {
         Classes.put("interest", 0.0);
     }
     
+    //Reuters Cat7
     private void InitClasses() {
+        Classes.put("acq", 0.0);
+        Classes.put("corn", 0.0);
+        Classes.put("crude", 0.0);
+        Classes.put("earn", 0.0);
+        Classes.put("interest", 0.0);
+        Classes.put("ship", 0.0);
+        Classes.put("trade", 0.0);
+        
+        ClassOccurence.put("acq", 0.0);
+        ClassOccurence.put("corn", 0.0);
+        ClassOccurence.put("crude", 0.0);
+        ClassOccurence.put("earn", 0.0);
+        ClassOccurence.put("interest", 0.0);
+        ClassOccurence.put("ship", 0.0);
+        ClassOccurence.put("trade", 0.0);
+    }
+    
+    
+    private void InitClasses20NewsGroup() {
         Classes.put("alt.atheism", 0.0);
         Classes.put("comp.graphics", 0.0);
         Classes.put("comp.os.ms-windows.", 0.0);

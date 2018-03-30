@@ -44,6 +44,28 @@ public class DBFunctions {
         return lsaDocLabel;
     }
     
+    public static ArrayList SelectCollectionTrainLabels(
+            int CollectionId, Session session)
+    {
+        //session.beginTransaction();
+        Criteria c = session.createCriteria(DocLabels.class, "DocLabels"); 
+        //c.setProjection(Projections.property("DocLabels.id.label"));
+        c.setProjection(Projections.distinct( Projections.property( "DocLabels.id.label" ) ) );
+        c.add(Restrictions.eq("DocLabels.id.collectionId", CollectionId));
+       // c.add(Restrictions.eq("DocLabels.tagType", "TR"));
+        
+        List lsDocLabels = (List) c.list();
+        ArrayList lsaDocLabel = new ArrayList<String>();
+        if(lsDocLabels != null)
+        {
+            for(int i = 0; i < lsDocLabels.size(); i++)
+            {
+                lsaDocLabel.add((String)lsDocLabels.get(i));
+            }                
+        }
+        return lsaDocLabel;
+    }
+    
     public static void main(String [] args)
     {
         //SelectLabelofDoc("CC", 4);

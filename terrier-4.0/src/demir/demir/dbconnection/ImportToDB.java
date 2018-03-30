@@ -121,6 +121,7 @@ public class ImportToDB {
             objRun.setTestPrm(tstPrm);
             session.save(objRun); 
             session.getTransaction().commit();
+            System.out.println("----RUN ID---" + runId);
             return runId;
         }   
         catch (HibernateException e) 

@@ -26,6 +26,15 @@ public class FeatureLoader {
         }
          return LoadFeaturesFromFile(FeaturesFileName);
      }
+     
+     public static  Map LoadCategoryFeaturesFromFile()
+     {
+        String FeaturesFileName = ApplicationSetup.getProperty("demir.features.category", "");
+        if (FeaturesFileName.equals(null) || FeaturesFileName.equals("")) {
+            return null;
+        }
+         return LoadFeaturesFromFile(FeaturesFileName);
+     }
     
      public static  Map LoadFeaturesFromFile(String FeaturesFileName)  {
 
@@ -40,7 +49,7 @@ public class FeatureLoader {
             br = new BufferedReader(new FileReader(FeaturesFileName));
             while ((sCurrentLine = br.readLine()) != null) {
              String [] sTerm = sCurrentLine.split("\t");
-             featureValues.put(sTerm[0], Double.parseDouble(sTerm[1]));
+             featureValues.put(sTerm[0].trim(), Double.parseDouble(sTerm[1]));
              //System.out.println(sCurrentLine);
             }
             if (br != null) {

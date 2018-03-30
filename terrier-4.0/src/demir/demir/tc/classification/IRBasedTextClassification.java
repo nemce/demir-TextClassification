@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.Session;
 import demir.terrier.querying.IRTCDocNoOutputFormat;
+import demir.terrier.utility.FeatureLoader;
 import org.terrier.utility.ApplicationSetup;
 
 /**
@@ -26,6 +27,7 @@ public class IRBasedTextClassification {
     HashMap<String, IRMedicalQuery> QrySet = new HashMap<String, IRMedicalQuery>();
     ClassificationParameters clsPrm = null;
     Session session = null;
+    Map<String, Double> CategoryFeas = null;
 
     public HashMap<String, IRMedicalQuery> getQrySet() {
         return QrySet;
@@ -53,6 +55,10 @@ public class IRBasedTextClassification {
                 clsPrm.RunId = ImportToDB.InsertRun(session, clsPrm);
             } else {
             }
+            
+           CategoryFeas = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
+           ApplicationSetup.getProperty("demir.features.Category", ""));
+            
         } catch (Exception ex) {
             Logger.getLogger(IRBasedTextClassification.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -100,8 +106,7 @@ public class IRBasedTextClassification {
             }
             long endLoading = System.currentTimeMillis();
             
-            Map<String, Double> CategoryFeas = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
-           ApplicationSetup.getProperty("demir.features.Category", ""));
+            
              
 //            System.out.println("time to intialise index : "
 //            + ((endLoading - startLoading) / 1000.0D));
@@ -351,6 +356,17 @@ public class IRBasedTextClassification {
                 }
             }
             irQuery.ClearListICDAssigned();
+            Map<String, Double>  CategoryFeatures = FeatureLoader.LoadCategoryFeaturesFromFile();
+            if(CategoryFeatures != null)
+            {
+                for (Object entryRes : listRes.keySet()) {
+                    java.lang.String key = entryRes.toString();
+                    java.lang.Double value = listRes.get(key).doubleValue();
+                    
+                    double categoryConst = CategoryFeatures.get(key).doubleValue();
+                    listRes.put(key, value * categoryConst);
+                }
+            }
             if (clsPrm.getLabelFiltering().equals(clsPrm.LABEL_FILTERING_TRH)) {
                 SortLabels(listRes, clsPrm.getTreshold(), irQuery.getListICDAssignedValues(), irQuery.getListICDAssignedKeys());
             } else if (clsPrm.getLabelFiltering().equals(clsPrm.LABEL_FILTERING_FIRSTN)) {

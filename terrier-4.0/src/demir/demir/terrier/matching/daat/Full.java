@@ -45,7 +45,10 @@ public class Full extends org.terrier.matching.daat.Full {
     Map<String, Double> TermFeas = null;
     // TODO MELTEM değiştirilecek.
     // 01052016
-    double default_feature_val = 1.0;
+    //double default_feature_val = 1.0;
+    // 17072016 
+    // lexiconda olup feature değerleri hesaplanmayan termler için değerin 0.0 gelmesi için değiştirilmiştir.
+    double default_feature_val = 0.0;
 
     // 19.06.2016 Added By Meltem
     Map<String, Double> DocFeas = null;
@@ -203,12 +206,15 @@ public class Full extends org.terrier.matching.daat.Full {
                 nextDocid = (int) (elem >>> 32);
             } while (nextDocid == currentDocId);
             
-            currentCandidate.CalculateScoreNormal();
+             //currentCandidate.CalculateScoreNormal();
             //currentCandidate.CalculateScore3();
-            //currentCandidate.CalculateScore4();
+            currentCandidate.CalculateScore4();
             //currentCandidate.CalculateScore5();
             //currentCandidate.CalculateScore2();
-            currentCandidate.UpdateScoreByDocWeight(docWeight);
+            if(DocFeas!= null)
+            {
+                currentCandidate.UpdateScoreByDocWeight(docWeight);
+            }
             
             if ((! targetResultSetSizeReached) || currentCandidate.getScore() > threshold) {
             	//System.err.println("New document " + currentCandidate.getDocId() + " with score " + currentCandidate.getScore() + " passes threshold of " + threshold);
