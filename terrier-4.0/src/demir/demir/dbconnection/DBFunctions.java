@@ -44,6 +44,27 @@ public class DBFunctions {
         return lsaDocLabel;
     }
     
+    
+    public static ArrayList SelectDocsOfLabel(
+            String CategoryName, int CollectionId, Session session)
+    {
+        Criteria c = session.createCriteria(TtDocs.class, "TtDocs"); 
+        c.setProjection(Projections.property("TtDocs.id.fileId"));
+        c.add(Restrictions.eq("TtDocs.id.collectionId", CollectionId));
+        c.add(Restrictions.eq("DocLabels.id.label", CategoryName));
+        c.add(Restrictions.eq("DocLabels.tagType", "TR"));
+        List lsLabelDocs = c.list();
+        ArrayList lsaLabelDocs = new ArrayList<String>();
+        if(lsLabelDocs != null)
+        {
+            for(int i = 0; i < lsLabelDocs.size(); i++)
+            {
+                lsaLabelDocs.add((String)lsLabelDocs.get(i));
+            }                
+        }
+        return lsaLabelDocs;
+    }
+    
     public static ArrayList SelectCollectionTrainLabels(
             int CollectionId, Session session)
     {

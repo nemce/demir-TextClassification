@@ -264,6 +264,7 @@ public class TermInfo {
     /// N11 A -  N10 B - N01 C - N00 D
     public double CalculateMI3(double N11, double N01, double N10, double Total, String Classlabel) {
         Double dVal;
+        // 16.06.2018 BURASI HATALI OLABİLİR HEPSİ SIFIR İSE SIFIT OLMALI
         if (N11 == 0 || N01 == 0 || N10 ==0) {
             dVal = 0.0;
         } else {

@@ -36,14 +36,18 @@ public class TestClassificationByQuery {
 
     public static void main(String[] args) {
         IRBasedTextClassification ibtc = new IRBasedTextClassification();
-
-        String sTestFolder = ibtc.getClsPrm().getTestFolderPath();
-        String sTopicFile = ibtc.getClsPrm().getTopicFileName();
-        if (!sTestFolder.isEmpty()) {
-            ReadFiles(ibtc, sTestFolder);
-        } else {
-            ReadTopicFile(ibtc, sTopicFile);
+        try {
+                String sTestFolder = ibtc.getClsPrm().getTestFolderPath();
+                String sTopicFile = ibtc.getClsPrm().getTopicFileName();
+                if (!sTestFolder.isEmpty()) {
+                    ReadFiles(ibtc, sTestFolder);
+                } else {
+                    ReadTopicFile(ibtc, sTopicFile);
+                }
+        } catch (Exception ex) {
+            Logger.getLogger(TestClassificationByQuery.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         // ibtc.CloseConnections(); /// TODO Consider for parallel programing.
     }
 
@@ -102,11 +106,11 @@ public class TestClassificationByQuery {
             int iStartIndex = sWholeText.indexOf(sTopicStartTag);
             int iEndIndex = sWholeText.indexOf(sTopicEndTag);
             String QueryText = sWholeText.substring(iStartIndex, iEndIndex + sTopicEndTag.length());
-             
+
             int iStartIndex1 = QueryText.indexOf(sFIDStartTag);
             int iEndIndex1 = QueryText.lastIndexOf(sFIDEndTag);
             String QueryName = QueryText.substring(iStartIndex1 + sFIDEndTag.length(), iEndIndex1);
-            
+
             ++iQueryId;
             QueryText = TestClassificationByQuery.GenerateQueryFile(String.valueOf(iQueryId), QueryText, ibtc.clsPrm.getQueryTagList());
             queries.put(QueryName, QueryText);

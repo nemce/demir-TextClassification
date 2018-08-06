@@ -167,15 +167,19 @@ public class IRBasedTextClassification {
                 int iN1Index = sTempLine.indexOf(' ');
                 String sQueryId = sTempLine.substring(0, iN1Index);
                 if (QrySet.get(sQueryId).getListQRes().size() < clsPrm.MaxRetDocSize) {
-                    sTempLine = sTempLine.substring(iN1Index + 4, sTempLine.length());
-                    iN1Index = sTempLine.indexOf(' ');
-                    String sDocId = sTempLine.substring(0, iN1Index);
-                    sTempLine = sTempLine.substring(iN1Index + 1, sTempLine.length());
-                    iN1Index = sTempLine.indexOf(' ');
-                    sTempLine = sTempLine.substring(iN1Index + 1, sTempLine.length());
-                    iN1Index = sTempLine.indexOf(' ');
-                    //double dVal = Double.parseDouble(sTempLine.substring(0, iN1Index).replace('.', ','));
-                    double dVal = Double.parseDouble(sTempLine.substring(0, iN1Index));
+//                    sTempLine = sTempLine.substring(iN1Index + 4, sTempLine.length());
+//                    iN1Index = sTempLine.indexOf(' ');
+//                    String sDocId = sTempLine.substring(0, iN1Index);
+//                    sTempLine = sTempLine.substring(iN1Index + 1, sTempLine.length());
+//                    iN1Index = sTempLine.indexOf(' ');
+//                    sTempLine = sTempLine.substring(iN1Index + 1, sTempLine.length());
+//                    iN1Index = sTempLine.indexOf(' ');
+//                    //double dVal = Double.parseDouble(sTempLine.substring(0, iN1Index).replace('.', ','));
+//                    double dVal = Double.parseDouble(sTempLine.substring(0, iN1Index));
+                    
+                    /// 20 news grouo c3m testleri için değiştirdim.
+                    String sDocId = sTempLine.substring(iN1Index + 1, sTempLine.length()).trim();
+                    double dVal = 1;
                     IRMedicalQuery irQuery = new IRMedicalQuery();
                     irQuery.setCollectionId(clsPrm.CollectionId);
                     irQuery.setsDocNo(sDocId);

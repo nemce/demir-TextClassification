@@ -51,7 +51,7 @@ public static Connection Connect(){
 //            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/rapidminer_repo?" +
 //                    "user=root&password=xxx");
               con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demir_tc?" +
-                    "user=root&password=xxx");
+                    "user=root&password=Meltem.48");
         } catch (SQLException ex) {
             Logger.getLogger(ConnectToServer.class.getName()).log(Level.SEVERE, null, ex);
         }

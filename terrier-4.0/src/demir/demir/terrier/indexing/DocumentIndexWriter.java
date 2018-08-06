@@ -55,8 +55,8 @@ public class DocumentIndexWriter {
             //diw.printDocumentIndex(index, "document");
             //diw.printWeightedDocumentIndex(index, "document");
             //diw.GetInvertedIndex(index, null);
-            diw.printLexicon(index, "lexicon");
-            //diw.printIndexTermClass(index, "document", true);
+            //diw.printLexicon(index, "lexicon");
+            diw.printIndexTermClass(index, "document", false);
             //diw.printIndexTermDoc(index, "document", true);
         } catch (Exception ex) {
             Logger.getLogger(DocumentIndexWriter.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,19 +141,18 @@ public class DocumentIndexWriter {
         Lexicon lx = index.getLexicon();
 
         Session session = demir.tc.irbased.hibernate.connection.ConnectToServer.Connect();
-        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\20NEWS\\crossfold\\3\\TERM_CAT_weighted.txt");
+        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\20NEWS\\18_1_1_TERM_CAT_TF_IDF.txt");
 
         /// indexden çıkarılacak token listesinin belirlenmesi için eklenmiştir. 
         /// Bir sete a,t örnek bir token listesi var ise kullanılabilir.
         /// Örneğin TTCP veri setinde orjinal.txt kullanılmıştır.
-        
 //        Map<String, Double> tokenList = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
 //          ApplicationSetup.getProperty("demir.features.MI", null));
-        
         while (iterator.hasNext()) {
             DocumentIndexEntry die = iterator.next();
             //System.out.print(docid + ": " + die.toString() + " ");
             String docno = metaIndex.getItem(metaIndexDocumentKey, docid);
+            double docLength = die.getDocumentLength();
 
             int[][] docTerms = di.getTerms(docid);
 //            System.out.println(docid + ": " + die.toString()
@@ -163,12 +162,27 @@ public class DocumentIndexWriter {
             ArrayList Labels = demir.dbconnection.DBFunctions.SelectLabelofDoc(docno, collectionId, session);
             String sLine = "";
             for (int i = 0; i < docTerms[0].length; i++) {
+                LexiconEntry lxe = (LexiconEntry) lx.getLexiconEntry(docTerms[0][i]).getValue();
                 String sTerm = lx.getLexiconEntry(docTerms[0][i]).getKey().toString();
-//                if(tokenList.containsKey(sTerm))
+
+                //Added By Meltem 16072018
+                double score;
+                TF_IDF wm = new TF_IDF();
+                wm.setCollectionStatistics(index.getCollectionStatistics());
+                wm.setEntryStatistics(lxe.getWritableEntryStatistics());
+                wm.setKeyFrequency(1);
+                IndexUtil.configure(index, wm);
+                wm.prepare();
+                double tf = docTerms[1][i];
+                score = wm.score(tf, docLength);
+                //Added By Meltem 16072018
+
+//              if(tokenList.containsKey(sTerm))
 //                {
 //              for (int j = 0; j < Labels.size(); j++) {
 //                   System.out.println(docno + "," + sTerm +  "," + Labels.get(j) +  "," + iOccurence);
 //                }
+                /// Burda hata var kontrol et
                 for (int j = 0; j < Labels.size(); j++) {
                     if (OccurenceBased) {
                         int iOccurence = docTerms[1][i];
@@ -177,10 +191,10 @@ public class DocumentIndexWriter {
                             sLine += sTerm + "," + "c" + Labels.get(j) + "\n";
                         }
                     } else {
-                        sLine += sTerm + "," + "c" + Labels.get(j) + "\n";
+                        sLine += sTerm + "," + "c" + Labels.get(j) + "," + score + "\n";
                     }
-                //}
-            }
+                    //}
+                }
             }
             pwm.println(sLine);
             sLine = "";
@@ -194,8 +208,7 @@ public class DocumentIndexWriter {
         System.out.println(docid);
     }
 
-    
-     protected void printIndexTermDoc(Index index, String structureName, boolean OccurenceBased) throws IOException {
+    protected void printIndexTermDoc(Index index, String structureName, boolean OccurenceBased) throws IOException {
 
         Iterator<DocumentIndexEntry> iterator
             = (Iterator<DocumentIndexEntry>) index.getIndexStructureInputStream(structureName);
@@ -208,15 +221,13 @@ public class DocumentIndexWriter {
         Lexicon lx = index.getLexicon();
 
         Session session = demir.tc.irbased.hibernate.connection.ConnectToServer.Connect();
-        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\TTCP\\whitelist\\TERM_DOC_weighted.txt");
+        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\20NEWS\\18_1_3_TERM_DOC_W.txt");
 
         /// indexden çıkarılacak token listesinin belirlenmesi için eklenmiştir. 
         /// Bir sete a,t örnek bir token listesi var ise kullanılabilir.
         /// Örneğin TTCP veri setinde orjinal.txt kullanılmıştır.
-        
 //        Map<String, Double> tokenList = demir.terrier.utility.FeatureLoader.LoadFeaturesFromFile(
 //          ApplicationSetup.getProperty("demir.features.MI", null));
-        
         while (iterator.hasNext()) {
             DocumentIndexEntry die = iterator.next();
             //System.out.print(docid + ": " + die.toString() + " ");
@@ -227,20 +238,20 @@ public class DocumentIndexWriter {
 //                    + " Doc No : " + docno
 //                    + " Doc Length : " + die.getDocumentLength()
 //                    + " # of entries : " + die.getNumberOfEntries());
-           String sLine = "";
+            String sLine = "";
             for (int i = 0; i < docTerms[0].length; i++) {
                 String sTerm = lx.getLexiconEntry(docTerms[0][i]).getKey().toString();
 
-                    if (OccurenceBased) {
-                        int iOccurence = docTerms[1][i];
-                        for (int k = 0; k < iOccurence; k++) {
+                if (OccurenceBased) {
+                    int iOccurence = docTerms[1][i];
+                    for (int k = 0; k < iOccurence; k++) {
 
-                            sLine += sTerm + "," +  docno + "\n";
-                        }
-                    } else {
                         sLine += sTerm + "," + docno + "\n";
                     }
-                
+                } else {
+                    sLine += sTerm + "," + docno + "\n";
+                }
+
             }
             pwm.println(sLine);
             sLine = "";
@@ -252,7 +263,7 @@ public class DocumentIndexWriter {
         pwm.close();
         close(iterator);
     }
-     
+
     protected void printWeightedDocumentIndex(Index index, String structureName) throws IOException {
 
         Iterator<DocumentIndexEntry> iterator
@@ -265,7 +276,7 @@ public class DocumentIndexWriter {
         DirectIndex di = new DirectIndex((IndexOnDisk) index, "direct");
         Lexicon lx = index.getLexicon();
 
-        PrintWriter pwm = new PrintWriter("D:\\Datasets\\20NEWSGROUP\\20news-18828\\documentindex.txt");
+        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\20NEWS\\18_1_3_term_doc_tfidf.txt");
 
         while (iterator.hasNext()) {
             DocumentIndexEntry die = iterator.next();
@@ -277,12 +288,15 @@ public class DocumentIndexWriter {
 //                    + " Doc Length : " + die.getDocumentLength()
 //                    + " # of entries : " + die.getNumberOfEntries());
 
-            String sLine = "";
+            String sLine = docno + " ";
 
             double docLength = die.getDocumentLength();
             for (int i = 0; i < docTerms[0].length; i++) {
-                LexiconEntry lxe = (LexiconEntry) lx.getLexiconEntry(docTerms[0][i]);
+
                 String sTerm = lx.getLexiconEntry(docTerms[0][i]).getKey().toString();
+                LexiconEntry lxe = (LexiconEntry) lx.getLexiconEntry(docTerms[0][i]).getValue();
+
+                double score;
                 TF_IDF wm = new TF_IDF();
                 //wm = (WeightingModel) queryTerms.getTermWeightingModels(queryTerm)[j].clone();
                 wm.setCollectionStatistics(index.getCollectionStatistics());
@@ -292,15 +306,21 @@ public class DocumentIndexWriter {
                 IndexUtil.configure(index, wm);
                 wm.prepare();
                 double tf = docTerms[1][i];
-                wm.score(tf, docLength);
+                score = wm.score(tf, docLength) ;
                 // System.out.println(docno + "," + sTerm + "," + docTerms[1][i]);
-                for (int j = 0; j < docTerms[1][i]; j++) {
-                    System.out.print(sTerm);
-                    sLine += sTerm;
-//
-                }
+                /* 15.07.2018 tarihinde kapatıldı
+                 Bir kelimenin dokuman başına ağırlığı yazılacak.
+                 for (int j = 0; j < docTerms[1][i]; j++) {
+                 System.out.print(sTerm);
+                 sLine += sTerm;
+                 //
+                 }
+                 */
+
+                //sLine = docno + "," + sTerm + "," + score;
+                sLine = sTerm   + "," + docno + "," + score;
+                pwm.println(sLine);
             }
-            pwm.println(sLine);
             if (docid % 1000 == 0) {
                 pwm.flush();
             }
@@ -316,12 +336,12 @@ public class DocumentIndexWriter {
         Idf idf = new Idf(numberOfDocs);
         Iterator<Map.Entry<?, LexiconEntry>> lexiconStream
             = (Iterator<Map.Entry<?, LexiconEntry>>) index.getIndexStructureInputStream(structureName);
-        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\TTCP\\whitelist\\TERMS.txt");
+        PrintWriter pwm = new PrintWriter("D:\\R PROGRAMMING\\20NEWS\\18_1_3_TERMS.txt");
         int i = 0;
         while (lexiconStream.hasNext()) {
             Map.Entry<?, LexiconEntry> lee = lexiconStream.next();
             double idfVal = idf.idf(lee.getValue().getDocumentFrequency());
-                        // System.out.println(lee.getKey().toString()+","+ idfVal +","+lee.getValue().toString());
+            // System.out.println(lee.getKey().toString()+","+ idfVal +","+lee.getValue().toString());
             //System.out.println(lee.getKey().toString());
             pwm.println(lee.getKey().toString());
             if (i % 100 == 0) {
@@ -335,7 +355,6 @@ public class DocumentIndexWriter {
     // GetInvertedIndex fonksiyonu her bir termin hangi dokumanlarD geçtiğini bulur.
     // Dokuman listesi üzerinden class bilgisine ulaşılır.
     // Feature Selection algoritmalarının denenmesi için hazırlanmıştır.
-
     protected void GetInvertedIndex(Index index, String structureName) throws IOException, Exception {
         Lexicon lx = index.getLexicon();
         String metaIndexDocumentKey = ApplicationSetup.getProperty("trec.querying.outputformat.docno.meta.key", "docno");
