@@ -19,8 +19,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.transformation.SortedList;
 import org.hibernate.Session;
 import org.hsqldb.persist.HsqlDatabaseProperties;
 import org.terrier.matching.models.Idf;
@@ -138,12 +141,16 @@ public class DocumentIndexWriterInArffFormat {
         Iterator<Map.Entry<?, LexiconEntry>> lexiconStream
             = (Iterator<Map.Entry<?, LexiconEntry>>) index.getIndexStructureInputStream(structureName);
         int i = 0;
+        
         while (lexiconStream.hasNext()) {
+            
             Map.Entry<?, LexiconEntry> lee = lexiconStream.next();
-            pwm.println("@attribute  t" + lee.getKey().toString() + " numeric");
-            if (i % 100 == 0) {
+            //pwm.println("@attribute  t" + lee.getKey().toString() + " numeric");
+            pwm.println("@attribute  t" + i  + " numeric");
+            if (i % 100 == 0) { 
                 pwm.flush();
             }
+            i++;
         }
         pwm.println("@attribute class numeric");
         IndexUtil.close(lexiconStream);

@@ -8,11 +8,14 @@ package demir.terrier.applications.batchquerying;
 import demir.datasets.Generator.ImportFileText;
 import static demir.terrier.indexing.DocumentIndexWriterInArffFormat.ReadDocLabels;
 import static demir.terrier.indexing.DocumentIndexWriterInArffFormat.ReadLabels;
+import static demir.terrier.indexing.DocumentIndexWriterInArffFormat.printLexicon;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -22,6 +25,7 @@ import org.terrier.querying.Request;
 import org.terrier.querying.SearchRequest;
 import org.terrier.structures.Index;
 import org.terrier.structures.IndexUtil;
+import org.terrier.structures.Lexicon;
 import org.terrier.structures.LexiconEntry;
 
 /**
@@ -31,52 +35,81 @@ import org.terrier.structures.LexiconEntry;
 public class TrecQuerying {
 
     protected static final org.apache.log4j.Logger logger
-        = org.apache.log4j.Logger.getLogger(TrecQuerying.class);
+            = org.apache.log4j.Logger.getLogger(TrecQuerying.class);
 
     public static void main(String[] args) {
 
         ArrayList labels = ReadLabels("D:\\R PROGRAMMING\\Data\\20NEWS\\CATS.txt");
         HashMap doclabels = ReadDocLabels("D:\\R PROGRAMMING\\Data\\20NEWS\\DOC_CAT.TXT", labels);
-        String outputFile = "D:\\R PROGRAMMING\\data\\20NEWS\\18_1_term_doc.arff";
-      
+        String outputFile = "D:\\R PROGRAMMING\\data\\20NEWS\\18_1_term_doc_test.arff";
+        String TestPath = "D:\\Datasets\\20NEWSGROUP\\20news-18828\\test_terrier";
         TrecQuerying trecquerying = new TrecQuerying();
-        trecquerying.WriteQueryFilesInArffFormat(null);
-        
-        
-        /// Burda kaldım
-        /// Test file oku tümünü
-        /// arf formatına getir 
-        /// trin dosysı için att isimleri hatalı düzelt.
+        try {
+            trecquerying.WriteQueryFilesInArffFormat(outputFile, TestPath, doclabels);
+
+            /// Burda kaldım
+            /// Test file oku tümünü
+            /// arf formatına getir
+            /// trin dosysı için att isimleri hatalı düzelt.
+        } catch (IOException ex) {
+            Logger.getLogger(TrecQuerying.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
-    public void  WriteQueryFilesInArffFormat(String outputFile)
-    {
+
+    public void WriteQueryFilesInArffFormat(String outputFile, String TestPath,
+            HashMap docLabels) throws FileNotFoundException, IOException {
         String pQueryText = "";
         String pQueryId = "";
         double c = 1.0;
         Boolean isParameterValueSpecified = false;
         Index index = loadIndex();
-        pQueryText = ReadFile("D:\\Datasets\\20NEWSGROUP\\20news-18828\\test_terrier\\rec_sport_hockey_54067");
+        Lexicon lx = index.getLexicon();
+
+        PrintWriter pwm = new PrintWriter(outputFile);
+        pwm.println("@relation DTM");
+        int numberOfEntries = printLexicon(index, "lexicon", pwm);
+        pwm.println("@data");
+
+        int docid = 0;
+        File [] files = ListFiles(TestPath);
+        for( docid = 0; docid < files.length; docid++)
+        {
+        String sLine = "{";
+        pQueryText = ReadFile(files[docid].getAbsoluteFile().getAbsolutePath());
+
+        String docno = files[docid].getAbsoluteFile().getAbsolutePath().replace((TestPath + "\\"), "");
+        String docLabel = String.valueOf(docLabels.get(docno));
+
         org.terrier.applications.batchquerying.TRECQuerying querying
-            = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index, null);
+                = new org.terrier.applications.batchquerying.TRECQuerying(pQueryText, pQueryId, index, null);
         SearchRequest srq = querying.processOneQuery(c, isParameterValueSpecified);
         Request rq = (Request) srq;
         rq.getMatchingQueryTerms();
         ArrayList termList = new ArrayList();
-        for (String entry : rq.getMatchingQueryTerms().getTerms())
-        {
-            int TermId =  -1;
-            if(rq.getMatchingQueryTerms().getStatistics(entry) != null)
-             TermId = rq.getMatchingQueryTerms().getStatistics(entry).getTermId();
+        for (String entry : rq.getMatchingQueryTerms().getTerms()) {
+            int TermId = -1;
+            if (rq.getMatchingQueryTerms().getStatistics(entry) != null) {
+                TermId = rq.getMatchingQueryTerms().getStatistics(entry).getTermId();
+            }
             System.out.println(entry + " " + TermId);
             termList.add(TermId);
         }
         termList.sort(null);
-        
-        for(int i = 0; i < termList.size();i++)
-        {
-          
+        for (int i = 0; i < termList.size(); i++) {
+
+            int iTermIndex = (int)termList.get(i);
+            if(iTermIndex > -1)
+                sLine = sLine + iTermIndex + " " + "1" + ",";
+
         }
+        sLine = sLine + numberOfEntries + " " + docLabel + "}";
+        pwm.println(sLine);
+        if (docid % 1000 == 0) {
+            pwm.flush();
+        }
+        docid++;
+        }
+        pwm.close();
     }
 
     protected Index loadIndex() {
@@ -89,21 +122,21 @@ public class TrecQuerying {
         long endLoading = System.currentTimeMillis();
         if (logger.isInfoEnabled()) {
             logger.info("time to intialise index : "
-                + ((endLoading - startLoading) / 1000.0D));
+                    + ((endLoading - startLoading) / 1000.0D));
         }
         return index;
     }
-    
-      public static String ReadFile(String FilePath) {
+
+    public static String ReadFile(String FilePath) {
         String sLine = "";
         String sWholeText = "";
         ArrayList aLabels = new ArrayList();
         try {
-           // FileReader fr = new FileReader(FilePath);
-             File fileDir = new File(FilePath);
-		BufferedReader br = new BufferedReader(
-		   new InputStreamReader(
-                      new FileInputStream(fileDir), "windows-1254"));  
+            // FileReader fr = new FileReader(FilePath);
+            File fileDir = new File(FilePath);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(fileDir), "windows-1254"));
             while ((sLine = br.readLine()) != null) {
                 sWholeText += sLine + "\n";
             }
@@ -113,5 +146,12 @@ public class TrecQuerying {
             Logger.getLogger(ImportFileText.class.getName()).log(Level.SEVERE, null, ex);
         }
         return sWholeText;
+    }
+    
+     public static File[] ListFiles(String sFolder) {
+        System.out.println(sFolder);
+        File file = new File(sFolder);
+        File[] files = file.listFiles();
+        return files;
     }
 }
