@@ -15,7 +15,7 @@ package org.terrier.matching.models;
  *
  * @author nmeltem
  */
-public class Roberts_TF  extends WeightingModel {
+public class Robert_TF  extends WeightingModel {
     
 	protected static final long serialVersionUID = 1L;
 
@@ -31,14 +31,14 @@ public class Roberts_TF  extends WeightingModel {
 	/** 
 	 * A default constructor to make this model.
 	 */
-	public Roberts_TF() {
+	public Robert_TF() {
 		super();
 	}
 	/** 
 	 * Constructs an instance of TF_IDF
 	 * @param _b
 	 */
-	public Roberts_TF(double _b) {
+	public Robert_TF(double _b) {
 		this();
 		this.b = _b;
 	}
@@ -59,9 +59,11 @@ public class Roberts_TF  extends WeightingModel {
 	 */
 	public double score(double tf, double docLength) {
 		double Robertson_tf = k_1*tf/(tf+k_1*(1-b+b*docLength/averageDocumentLength));
-		//double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
+		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
 		//return keyFrequency * Robertson_tf * idf;
-                return Robertson_tf;
+                //return Robertson_tf*idf; // Robert2TF
+                
+                return Robertson_tf; // Robert_TF
 	}
         
 	/**
@@ -88,9 +90,10 @@ public class Roberts_TF  extends WeightingModel {
 		double keyFrequency) 
 	{
 		double Robertson_tf = k_1*tf/(tf+k_1*(1-b+b*docLength/averageDocumentLength));
-		//double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
+		double idf = WeightingModelLibrary.log(numberOfDocuments/documentFrequency+1);
 		//return keyFrequency*Robertson_tf * idf;
-                return Robertson_tf;
+                //return Robertson_tf*idf; Robert2TF
+                return Robertson_tf; // Robert_TF
 
 	}
 

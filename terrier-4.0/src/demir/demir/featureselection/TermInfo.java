@@ -37,8 +37,11 @@ public class TermInfo {
     HashMap<String, Double> MI;
     double TermFrequency = 0.0;
     double TermOccurence = 0.0;
+    double TF = 0;
+    double NT = 0;
     // # of Classes term ti Occurs in
     double   c_ti = 0.0;
+    double decoupling = 0.0;
 
     public TermInfo(int TermId) {
         this.Classes = new HashMap<>();
@@ -49,6 +52,11 @@ public class TermInfo {
     }
     
     public TermInfo(int TermId, ArrayList  lsClass) {
+        
+        this.MI = new HashMap<>();
+        this.TermId = TermId;
+        
+        if(lsClass == null) return;
         this.Classes = new HashMap<String, Double>();
         this.ClassOccurence = new HashMap<String, Double>();
         for(int i = 0; i < lsClass.size(); i++)
@@ -56,8 +64,6 @@ public class TermInfo {
             Classes.put((String) lsClass.get(i), 0.0);
             ClassOccurence.put((String) lsClass.get(i), 0.0);
         }
-        this.MI = new HashMap<>();
-        this.TermId = TermId;
     }
 
     private TermInfo() {
@@ -88,7 +94,38 @@ public class TermInfo {
     {
         MI.put(classLabel, val);
     }
+    
+    public void setDecoupling(double val)
+    {
+        decoupling = val;
+    }
 
+    public double getDecoupling()
+    {
+        return decoupling;
+    }
+    
+    public void setNT(double val)
+    {
+        NT = val;
+    }
+
+    public double getNt()
+    {
+        return NT;
+    }
+    
+    public void setTF(double val)
+    {
+        TF = val;
+    }
+
+    public double getTF()
+    {
+        return TF;
+    }
+    
+        
     private void InitClassesDummy1() {
         Classes.put("acq", 0.0);
         Classes.put("corn", 0.0);

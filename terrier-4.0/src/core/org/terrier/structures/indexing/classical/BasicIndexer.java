@@ -251,6 +251,7 @@ public class BasicIndexer extends Indexer
 						/* pass term into TermPipeline (stop, stem etc) */
 						pipeline_first.processTerm(term);
 						/* the term pipeline will eventually add the term to this object. */
+                                                System.out.println(term);
 					}
 					if (MAX_TOKENS_IN_DOCUMENT > 0 && 
 							numOfTokensInDocument > MAX_TOKENS_IN_DOCUMENT)

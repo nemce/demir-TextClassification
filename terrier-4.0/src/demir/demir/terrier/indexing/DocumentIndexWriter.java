@@ -7,6 +7,7 @@ package demir.terrier.indexing;
 
 import demir.dbconnection.ConnectToServer;
 import demir.dbconnection.DBFunctions;
+import demir.featureselection.C3MTermWeighting;
 import demir.featureselection.ClassInfo;
 import demir.featureselection.FeatureGenerator;
 import demir.featureselection.TermInfo;
@@ -26,6 +27,7 @@ import org.hsqldb.persist.HsqlDatabaseProperties;
 import org.terrier.matching.models.Idf;
 import org.terrier.matching.models.TF_IDF;
 import org.terrier.matching.models.WeightingModel;
+import org.terrier.structures.DocumentIndex;
 import org.terrier.structures.DocumentIndexEntry;
 import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
@@ -54,9 +56,9 @@ public class DocumentIndexWriter {
         try {
             //diw.printDocumentIndex(index, "document");
             //diw.printWeightedDocumentIndex(index, "document");
-            //diw.GetInvertedIndex(index, null);
+            diw.GetInvertedIndex(index, null);
             //diw.printLexicon(index, "lexicon");
-            diw.printIndexTermClass(index, "document", false);
+            //diw.printIndexTermClass(index, "document", false);
             //diw.printIndexTermDoc(index, "document", true);
         } catch (Exception ex) {
             Logger.getLogger(DocumentIndexWriter.class.getName()).log(Level.SEVERE, null, ex);
@@ -357,33 +359,55 @@ public class DocumentIndexWriter {
     // Feature Selection algoritmalarının denenmesi için hazırlanmıştır.
     protected void GetInvertedIndex(Index index, String structureName) throws IOException, Exception {
         Lexicon lx = index.getLexicon();
+        DocumentIndex dx = index.getDocumentIndex();
         String metaIndexDocumentKey = ApplicationSetup.getProperty("trec.querying.outputformat.docno.meta.key", "docno");
         final MetaIndex metaIndex = index.getMetaIndex();
         PostingIndex<Pointer> invertedIndex = (PostingIndex<Pointer>) index.getInvertedIndex();
+         ArrayList lsClass = null;
+        /*
+        // Sadece Decoupling hesaplayacağım için kapattım
+        //12.21.2018
         ClassificationParameters prm = new ClassificationParameters();
         prm.LABEL_SEARCH_TYPE_DB = "DB";
         Session session = session = demir.tc.irbased.hibernate.connection.ConnectToServer.Connect();
+        int CollectionId = Integer.parseInt(ApplicationSetup.getProperty("tc.irbased.CollectionId", "-1"));
+        lsClass = DBFunctions.SelectCollectionTrainLabels(CollectionId, session);
+        // Sadece Decoupling hesaplayacağım için kapattım
+        //12.21.2018
+        */
         HashMap<String, ClassInfo> hmClass = new HashMap<>();
         HashMap<String, TermInfo> hmTerm = new HashMap<>();
 
-        int CollectionId = Integer.parseInt(ApplicationSetup.getProperty("tc.irbased.CollectionId", "-1"));
-        ArrayList lsClass = DBFunctions.SelectCollectionTrainLabels(CollectionId, session);
+        
 
         for (int i = 0; i < lx.numberOfEntries(); i++) {
             String sTerm = lx.getIthLexiconEntry(i).getKey().toString();
+            LexiconEntry lxe = (LexiconEntry) lx.getIthLexiconEntry(i).getValue();
+            double TF = lxe.getFrequency();
+            double NT = lxe.getDocumentFrequency();
+            
             //System.out.print(sTerm + " ");
             IterablePosting it = invertedIndex.getPostings((Pointer) lx.getIthLexiconEntry(i).getValue());
             TermInfo fsTerm = new TermInfo(i, lsClass);
-
+            fsTerm.setTF(TF);
+            fsTerm.setNT(NT);
+            double decouplingVal = 0;
             while (!it.endOfPostings()) {
                 it.next();
                 int docid = it.getId();
                 int iTermOccurence = it.getFrequency();
                 IRMedicalQuery mq = new IRMedicalQuery();
                 String docno = metaIndex.getItem(metaIndexDocumentKey, docid);
+                double docLength = dx.getDocumentEntry(docid).getDocumentLength();              
+                decouplingVal += C3MTermWeighting.CalculateCij(iTermOccurence, TF, iTermOccurence, docLength);
+                
+                /*
+                 // Sadece Decoupling hesaplayacağım için kapattım
+                 //12.21.2018
                 mq.setCollectionId(prm.getCollectionId());
                 mq.setsDocNo(docno);
                 mq.SelRecLabelbyDocId(prm, session);
+                
                 //System.out.print(docno + ';');
                 for (int j = 0; j < mq.getListICD().size(); j++) {
                     String sLabel = mq.getListICD().get(j);
@@ -392,14 +416,20 @@ public class DocumentIndexWriter {
                     fsTerm.AddClass(sLabel);
                     fsTerm.AddClassOccurence(sLabel, iTermOccurence);
                 }
+                // Sadece Decoupling hesaplayacağım için kapattım
+                //12.21.2018
+                */
             }
+            fsTerm.setDecoupling(decouplingVal);
             hmTerm.put(sTerm, fsTerm);
             //System.out.println();
 
             //if(i==100) break;
         }
-
-        FeatureGenerator.FeatureGenerator(hmClass, hmTerm);
+        C3MTermWeighting.Print(hmTerm);
+        // Sadece Decoupling hesaplayacağım için kapattım
+        //12.21.2018
+        //FeatureGenerator.FeatureGenerator(hmClass, hmTerm);
     }
 
 }

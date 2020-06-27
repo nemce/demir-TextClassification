@@ -191,7 +191,7 @@ public class TRECQuery implements QuerySource {
 	 */
 	public boolean extractQuery(String queryText, String QueryId, Vector<String> vecStringQueries, Vector<String> vecStringIds)
 	{
-		boolean gotSome = false;
+ 		boolean gotSome = false;
 		try {
 			BufferedReader br;
 			if (queryText.equals(null)) {

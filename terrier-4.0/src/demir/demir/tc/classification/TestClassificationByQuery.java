@@ -14,10 +14,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -82,25 +86,36 @@ public class TestClassificationByQuery {
     public static void ReadTopicFile(IRBasedTextClassification ibtc, String sTopicFile) {
         String sLine = "";
         String sWholeText = "";
+        /*
+        RCV1 dosyaları için çok yavaştı kapattım
+        */
+        int iLineCnt = 0;
         try {
             FileReader fr = new FileReader(sTopicFile);
             BufferedReader br = new BufferedReader(fr);
 
             while ((sLine = br.readLine()) != null) {
                 sWholeText += sLine + "\r\n";
+                 iLineCnt++;
+                 //if(iLineCnt == 15) break;
             }
             br.close();
             fr.close();
         } catch (IOException ex) {
             Logger.getLogger(TestClassificationByQuery.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+      
+          
         Map<String, String> queries = new HashMap<String, String>();
         //String sTopicStartTag = "<DOC>";
         //String sTopicEndTag = "</DOC>";
         String sTopicStartTag = "<TOP>";
         String sTopicEndTag = "</TOP>";
-        String sFIDStartTag = "<FID>";
-        String sFIDEndTag = "<FID>";
+        //String sFIDStartTag = "<FID>";
+        //String sFIDEndTag = "<FID>";
+        String sFIDStartTag = "<NUM>";
+        String sFIDEndTag = "<NUM>";
         int iQueryId = 0;
         while (sWholeText != null && !sWholeText.isEmpty()) {
             int iStartIndex = sWholeText.indexOf(sTopicStartTag);
@@ -109,7 +124,7 @@ public class TestClassificationByQuery {
 
             int iStartIndex1 = QueryText.indexOf(sFIDStartTag);
             int iEndIndex1 = QueryText.lastIndexOf(sFIDEndTag);
-            String QueryName = QueryText.substring(iStartIndex1 + sFIDEndTag.length(), iEndIndex1);
+            String QueryName = QueryText.substring(iStartIndex1 + sFIDEndTag.length(), iEndIndex1).trim();
 
             ++iQueryId;
             QueryText = TestClassificationByQuery.GenerateQueryFile(String.valueOf(iQueryId), QueryText, ibtc.clsPrm.getQueryTagList());
@@ -118,7 +133,7 @@ public class TestClassificationByQuery {
             if (iEndIndex + sTopicEndTag.length() == sWholeText.length()) {
                 break;
             }
-            sWholeText = sWholeText.substring(iEndIndex + 7, sWholeText.length());
+            sWholeText = sWholeText.substring(iEndIndex + sFIDEndTag.length(), sWholeText.length());
             sWholeText = sWholeText.trim();
         }
 

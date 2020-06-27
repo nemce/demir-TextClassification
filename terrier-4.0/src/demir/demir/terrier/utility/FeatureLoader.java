@@ -48,7 +48,7 @@ public class FeatureLoader {
         try {
             br = new BufferedReader(new FileReader(FeaturesFileName));
             while ((sCurrentLine = br.readLine()) != null) {
-             String [] sTerm = sCurrentLine.split("\t");
+             String [] sTerm = sCurrentLine.split("\t\t");
              featureValues.put(sTerm[0].trim(), Double.parseDouble(sTerm[1]));
              //System.out.println(sCurrentLine);
             }

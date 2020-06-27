@@ -191,7 +191,7 @@ public class CollectionSetGenerator {
         }
     }
 
-    private boolean AddDocToDocs(int pCollectionId, String pFileId, String pFileName, Session session) {
+    public boolean AddDocToDocs(int pCollectionId, String pFileId, String pFileName, Session session) {
         boolean checkDocExists = CheckDocExists(pCollectionId, pFileId, session);
         if (!checkDocExists) {
 
@@ -234,7 +234,7 @@ public class CollectionSetGenerator {
         }
     }
 
-    private void AddDocLabels(int pCollectionId, String pFileId, String pLabel, int pOrder, Session session) {
+    public void AddDocLabels(int pCollectionId, String pFileId, String pLabel, int pOrder, Session session) {
         try {
             DocLabels objDocLabel = new DocLabels();
             objDocLabel.setId(new DocLabelsId(pCollectionId, pFileId, pLabel));
